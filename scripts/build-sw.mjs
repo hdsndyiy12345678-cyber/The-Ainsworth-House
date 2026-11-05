@@ -4,7 +4,7 @@ async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const paths = await Promise.all(
     entries
-      .filter((e) => e.name !== "sw.js")
+      .filter((e) => !["sw.js", "_headers", "_redirects"].includes(e.name))
       .map((e) =>
         e.isDirectory() ? walk(`${dir}/${e.name}`) : `${dir}/${e.name}`,
       ),
@@ -12,7 +12,10 @@ async function walk(dir) {
   return paths.flat();
 }
 const files = await walk("dist");
+// Host configuration files are consumed by Netlify, not served as public URLs.
+// Include this generator in the version so worker changes also rotate the cache.
 const hash = createHash("sha256");
+hash.update(await readFile(new URL(import.meta.url)));
 for (const file of files) hash.update(await readFile(file));
 const version = hash.digest("hex").slice(0, 12);
 const urls = files.map((f) => "/" + f.replace(/^dist\//, ""));
