@@ -15,33 +15,27 @@ test("backup export, corruption rejection and explicit replacement", async ({
   const download = await downloading;
   const contents = await readFile((await download.path())!, "utf8");
   expect(JSON.parse(contents).version).toBe(1);
-  await d
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "broken.json",
-      mimeType: "application/json",
-      buffer: Buffer.from('{"version":2}'),
-    });
+  await d.locator("input[type=file]").setInputFiles({
+    name: "broken.json",
+    mimeType: "application/json",
+    buffer: Buffer.from('{"version":2}'),
+  });
   await expect(d.getByRole("alert")).toContainText("지원하지 않는 백업");
   const backup = JSON.parse(contents);
   backup.pet.name = "Backup Fern";
-  await d
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "valid.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(backup)),
-    });
+  await d.locator("input[type=file]").setInputFiles({
+    name: "valid.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
   await expect(d.getByText(/현재의 모든 기록을 덮어씁니다/)).toBeVisible();
   await d.getByRole("button", { name: "취소", exact: true }).click();
   await expect(d.getByText(/현재의 모든 기록을 덮어씁니다/)).toHaveCount(0);
-  await d
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "valid.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(backup)),
-    });
+  await d.locator("input[type=file]").setInputFiles({
+    name: "valid.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
   await d.getByRole("button", { name: "현재 기록을 덮어쓰고 복원" }).click();
   await d.getByRole("button", { name: "닫기" }).click();
   await page.getByRole("button", { name: "Drawing Room", exact: true }).click();
