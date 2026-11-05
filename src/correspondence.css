@@ -1,0 +1,191 @@
+@font-face {
+  font-family: "Ainsworth Script";
+  src: url("/fonts/Allura-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ainsworth Korean";
+  src: url("/fonts/NanumPenScript-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --hand: "Ainsworth Script", "Ainsworth Korean", cursive;
+}
+.practice-heading,
+.ink-guide,
+.letter-paper .handwriting,
+.letter-paper .signature {
+  font-family: var(--hand);
+  font-style: normal;
+  font-weight: 400;
+  font-synthesis: none;
+  font-variant-ligatures: common-ligatures contextual;
+}
+.letter-paper .handwriting {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(29px, 2.3vw, 37px);
+  line-height: 1.55;
+  color: #394638;
+  margin: 22px 0;
+}
+.letter-paper.grey .handwriting {
+  color: #3c4350;
+}
+.letter-paper .signature {
+  font-size: 37px;
+}
+.ink-guide {
+  color: #647650a6;
+}
+.modal .practice-heading {
+  font-size: clamp(34px, 4vw, 50px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.persistent-map,
+.modal-floating-map .persistent-map {
+  width: 150px;
+  padding: 8px 9px 7px;
+}
+.persistent-map .mini-title {
+  font-size: 13px;
+}
+.fixed-object {
+  isolation: isolate;
+  color: #ffed9d;
+  filter: drop-shadow(0 2px 3px #251c1880);
+}
+.fixed-object::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  z-index: -1;
+  background: #3c493ce8;
+  border: 2px solid #fce6a5;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px #382e2566,
+    0 0 12px #fff0b866;
+}
+.fixed-object svg {
+  stroke-width: 2.2;
+  animation: hotspot-breathe 3s ease-in-out infinite;
+}
+@keyframes hotspot-breathe {
+  50% {
+    transform: scale(1.15);
+  }
+}
+.fixed-object:focus-visible {
+  outline: 3px solid #fff1bf;
+  outline-offset: 4px;
+}
+.ai-connection,
+.ai-consent,
+.delivery-card {
+  border: 1px solid #b8aa82;
+  background: #f5edda;
+  background-image: var(--paper-art);
+  padding: 18px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.ai-connection summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: list-item;
+  align-content: center;
+}
+.ai-connection label {
+  display: block;
+  margin: 10px 0;
+}
+.ai-connection input {
+  width: 100%;
+  max-width: 540px;
+}
+.ai-connection p,
+.ai-consent p,
+.delivery-card p {
+  line-height: 1.7;
+}
+.ai-consent h4 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+.ai-consent .history-options {
+  max-height: 220px;
+  overflow: auto;
+}
+.ai-consent .history-options label {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #cabe9f;
+}
+.ai-consent input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+.ai-consent details {
+  margin: 8px 0;
+}
+.ai-consent pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 220px;
+  overflow: auto;
+  font-family: inherit;
+}
+.delivery-card .button-row {
+  flex-wrap: wrap;
+}
+.delivery-card[data-phase="generating"] {
+  border-color: #6e805c;
+}
+.delivery-card[data-phase="failed"] {
+  border-color: #a76243;
+}
+.post-module .badge.ai-badge {
+  color: #405139;
+}
+.letter-list .unread-count {
+  font-weight: 700;
+}
+@media (max-width: 750px) {
+  .persistent-map,
+  .modal-floating-map .persistent-map {
+    width: 112px;
+    padding: 6px 7px;
+  }
+  .persistent-map .mini-title {
+    font-size: 11px;
+    gap: 4px;
+  }
+  .persistent-map .mini-title svg {
+    width: 15px;
+  }
+  .letter-paper .handwriting {
+    font-size: 29px;
+  }
+  .ai-consent,
+  .ai-connection,
+  .delivery-card {
+    padding: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fixed-object svg {
+    animation: none;
+  }
+}
+.no-motion .fixed-object svg {
+  animation: none;
+}

@@ -141,6 +141,23 @@ test("self-contained review HTML runs without external resources", async ({
   );
   await page.route("**/art/**", (route) => route.abort());
   await page.goto("http://127.0.0.1:5173/ainsworth-review.html");
+  expect(
+    await page.evaluate(async () => {
+      const latin = await document.fonts.load(
+        '32px "Ainsworth Script"',
+        "Ainsworth",
+      );
+      const korean = await document.fonts.load(
+        '32px "Ainsworth Korean"',
+        "안녕",
+      );
+      return (
+        latin.length === 1 &&
+        korean.length === 1 &&
+        [...latin, ...korean].every((f) => f.status === "loaded")
+      );
+    }),
+  ).toBe(true);
   await page.getByRole("button", { name: "인트로 건너뛰기" }).click();
   await go(page, "Drawing Room");
   await expect(page.locator(".art-plate")).toHaveAttribute(

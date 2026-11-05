@@ -13,8 +13,22 @@ for (const f of await readdir(base + "/art"))
     art[f] =
       "data:image/webp;base64," +
       (await readFile(base + "/art/" + f)).toString("base64");
-const code = await readFile(base + jsPath, "utf8"),
-  css = await readFile(base + cssPath, "utf8");
+const code = await readFile(base + jsPath, "utf8");
+let css = await readFile(base + cssPath, "utf8");
+const fontLicenses = {};
+for (const name of await readdir(base + "/fonts")) {
+  if (name.endsWith("-OFL.txt"))
+    fontLicenses[name] = await readFile(base + "/fonts/" + name, "utf8");
+}
+// Embed the exact licensed fonts used by the app, including the Korean fallback.
+for (const name of await readdir(base + "/fonts")) {
+  if (!name.endsWith(".woff")) continue;
+  const data =
+    "data:font/woff;base64," +
+    (await readFile(base + "/fonts/" + name)).toString("base64");
+  css = css.split(`/fonts/${name}`).join(data);
+}
+if (css.includes("/fonts/")) throw Error("A review font was not embedded");
 const icon =
   "data:image/png;base64," +
   (await readFile(base + "/icon-192.png")).toString("base64");
@@ -26,7 +40,7 @@ html = html
   .replace(
     "</head>",
     () =>
-      `<link rel="icon" href="${icon}"/><style>${css.replace(/<\/style/gi, "<\\/style")}</style></head>`,
+      `<link rel="icon" href="${icon}"/><script type="application/json" id="ainsworth-font-licenses">${JSON.stringify(fontLicenses).replace(/</g, "\\u003c")}</script><style>${css.replace(/<\/style/gi, "<\\/style")}</style></head>`,
   )
   .replace(
     "</body>",

@@ -90,6 +90,37 @@ export type Letter = {
   sample: boolean;
   image?: string;
   keepsake?: boolean;
+  source?: "user" | "ai";
+  replyTo?: string;
+  threadId?: string;
+  sentAt?: string;
+  receivedAt?: string;
+};
+export type AiRequest = {
+  id: string;
+  person: Pick<Resident, "id" | "name" | "relation" | "year" | "notes">;
+  date: string;
+  letters: {
+    subject: string;
+    body: string;
+    direction: "incoming" | "outgoing";
+  }[];
+};
+export type MailJob = {
+  id: string;
+  letterId: string;
+  endpoint: string;
+  phase:
+    | "sending"
+    | "queued"
+    | "generating"
+    | "delivered"
+    | "failed"
+    | "paused";
+  submitted: boolean;
+  request: AiRequest;
+  error?: string;
+  createdAt: string;
 };
 export type Entry = {
   id: string;
@@ -130,6 +161,7 @@ export type State = {
     fed?: string;
   };
   letters: Letter[];
+  mailJobs?: MailJob[];
   residents: Resident[];
   entries: Entry[];
   cover: string;
@@ -267,10 +299,85 @@ export function validateBackup(x: unknown): State {
       !["inbox", "sent", "draft", "archive"].includes(l.folder as string) ||
       typeof l.read !== "boolean" ||
       typeof l.sample !== "boolean" ||
+      (l.source !== undefined &&
+        !["user", "ai"].includes(l.source as string)) ||
+      !["replyTo", "threadId", "sentAt", "receivedAt"].every(
+        (k) => l[k] === undefined || typeof l[k] === "string",
+      ) ||
       (l.image !== undefined &&
         (typeof l.image !== "string" || !l.image.startsWith("data:image/")))
     )
       throw Error("편지 데이터가 손상되었습니다.");
+  if (x.mailJobs !== undefined) {
+    if (
+      !Array.isArray(x.mailJobs) ||
+      new Set(x.mailJobs.map((j) => (object(j) ? j.id : null))).size !==
+        x.mailJobs.length
+    )
+      throw Error("AI 우편 기록이 손상되었습니다.");
+    for (const j of x.mailJobs) {
+      if (
+        !object(j) ||
+        !/^[0-9a-f-]{36}$/i.test(String(j.id)) ||
+        typeof j.letterId !== "string" ||
+        typeof j.endpoint !== "string" ||
+        typeof j.createdAt !== "string" ||
+        typeof j.submitted !== "boolean" ||
+        ![
+          "sending",
+          "queued",
+          "generating",
+          "delivered",
+          "failed",
+          "paused",
+        ].includes(j.phase as string) ||
+        (j.error !== undefined && typeof j.error !== "string") ||
+        !object(j.request)
+      )
+        throw Error("AI 우편 상태가 손상되었습니다.");
+      if (j.endpoint !== "") {
+        let u: URL;
+        try {
+          u = new URL(j.endpoint);
+        } catch {
+          throw Error("AI 서버 주소가 손상되었습니다.");
+        }
+        if (
+          u.username ||
+          u.password ||
+          u.search ||
+          u.hash ||
+          u.pathname !== "/" ||
+          (u.protocol !== "https:" &&
+            !(
+              u.protocol === "http:" &&
+              ["localhost", "127.0.0.1"].includes(u.hostname)
+            ))
+        )
+          throw Error("AI 서버 주소가 올바르지 않습니다.");
+      }
+      const r = j.request;
+      if (
+        r.id !== j.id ||
+        !object(r.person) ||
+        !["id", "name", "relation", "year", "notes"].every(
+          (k) => typeof (r.person as Record<string, unknown>)[k] === "string",
+        ) ||
+        typeof r.date !== "string" ||
+        !Array.isArray(r.letters) ||
+        r.letters.length < 1 ||
+        r.letters.length > 6 ||
+        !r.letters.every(
+          (l) =>
+            object(l) &&
+            typeof l.subject === "string" &&
+            typeof l.body === "string" &&
+            ["incoming", "outgoing"].includes(l.direction as string),
+        )
+      )
+        throw Error("AI 전송 내용이 손상되었습니다.");
+    }
+  }
   for (const e of x.entries) {
     if (
       !object(e) ||

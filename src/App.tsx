@@ -34,6 +34,8 @@ import {
 } from "./store";
 // Room activities are progressively implemented in Modules.tsx.
 import { Activities } from "./Modules";
+import { useMailDelivery } from "./ai";
+import { AiConnection } from "./AiPost";
 export function Modal({
   title,
   onClose,
@@ -149,6 +151,7 @@ export default function App() {
     if (ready && !state.entered) entryButton.current?.focus();
   }, [ready, state.entered]);
   const saveQueue = useRef(Promise.resolve());
+  const saveFailed = useRef(false);
   const revision = useRef(0);
   useEffect(() => {
     installArtTokens();
@@ -177,11 +180,15 @@ export default function App() {
     const rev = ++revision.current;
     saveQueue.current = saveQueue.current
       .catch(() => {})
-      .then(() => saveState(state))
+      .then(() => {
+        saveFailed.current = false;
+        return saveState(state);
+      })
       .then(() => {
         if (rev === revision.current) setSaved("모든 순간이 저장되었어요");
       })
       .catch(() => {
+        saveFailed.current = true;
         setSaved("저장 실패 — 백업을 내려받아 주세요");
       });
   }, [state, ready]);
@@ -221,6 +228,14 @@ export default function App() {
   function update(fn: (s: State) => State) {
     setState(fn);
   }
+  useMailDelivery(state, ready, update, setToast, () =>
+    saveQueue.current.then(() => {
+      if (saveFailed.current)
+        throw Error(
+          "전송 기록을 이 브라우저에 저장하지 못해 발송을 멈췄어요. 저장 공간을 확인해 주세요.",
+        );
+    }),
+  );
   function go(room: RoomId) {
     history.pushState({}, "", `#${room}`);
     update((s) => ({
@@ -627,6 +642,7 @@ function SettingsPanel({
         애니메이션 사용 (기기의 모션 감소 설정을 우선합니다)
       </label>
       <hr />
+      <AiConnection />
       <h3>기억을 안전하게 보관하기</h3>
       <p className="muted">
         기록과 이미지, 벡터 필기는 이 브라우저의 IndexedDB에 저장됩니다. 기기 간
@@ -671,7 +687,19 @@ function SettingsPanel({
           <button
             className="danger"
             onClick={() => {
-              update(() => pending);
+              update(() => ({
+                ...pending,
+                mailJobs: pending.mailJobs?.map((j) =>
+                  ["sending", "queued", "generating"].includes(j.phase)
+                    ? {
+                        ...j,
+                        phase: "paused",
+                        error:
+                          "백업에서 복원한 전송입니다. 연결을 확인한 뒤 전송 상태를 직접 확인해 주세요.",
+                      }
+                    : j,
+                ),
+              }));
               setPending(null);
               notify("백업을 복원했어요.");
             }}
@@ -684,7 +712,7 @@ function SettingsPanel({
       <p className="muted">
         데이터 형식 v1 · 실제 편지와 예제 편지는 별도로 표시됩니다.
         <br />
-        AI 자동 답장과 외부 API는 연결되지 않았습니다.
+        AI 답장은 서버 연결 후 편지마다 확인하여 요청합니다.
       </p>
     </div>
   );

@@ -25,11 +25,11 @@ Final post-fix full-view and focused comparisons reviewed. No remaining actionab
 
 ## Required fidelity surfaces
 
-- Typography: Georgia/available serif fallback and legible Korean fallback; real body text 14–22px, metadata smaller. Letter text uses literary italics. Native editing text replaces raster lettering; user data remains selectable/editable and readable. The original illustration's exact handwritten glyph contours are not a font claim.
+- Typography: Georgia/available serif fallback for interface text; bundled Allura cursive and Nanum Pen Korean handwriting for letters and practice. Native editing text replaces raster lettering; user data remains selectable/editable and readable. The original illustration's exact handwritten glyph contours are not a font claim.
 - Spacing/layout: full-window room art preserves its 1.6 aspect ratio, cropped views pan rather than squash. Fixed controls are at the reference corners. Activity canvases scroll internally where needed. The book and map composition, page margins and narrow indexes were revised after direct comparison.
 - Colour/tokens: cream, sage, powder blue, antique brass and honey oak are taken from approved art. Drawing room uses independent day/night plates. Native focus contrast is intentionally stronger than decorative marks in the concepts. Paper and stationery colour choices remain live.
 - Images: real generated background plates, transparent pose/prop/effect atlases and journal/map artwork are used. WebP delivery uses the original composition and preserves alpha; no replacement SVG room drawings or CSS illustrations. Separate overlays include cat, owl, mail, books, fire, candle and steam. Object positions were checked against furniture; the quill was lowered onto the desk during QA.
-- Copy/content: implementation keeps actual Korean controls, editable titles, explicit sample-letter status and the canonical fixed mystery facts. Generated decorative receipt/letter wording does not overwrite the case truth. AI and actual delivery remain explicitly disconnected.
+- Copy/content: implementation keeps actual Korean controls, editable titles, explicit sample-letter status and the canonical fixed mystery facts. Generated decorative receipt/letter wording does not overwrite the case truth. AI replies use an optional local OpenAI gateway with per-letter consent; real postal/email delivery remains unavailable.
 
 ## Interaction and runtime evidence
 
@@ -54,3 +54,13 @@ Unit tests cover v1 backwards compatibility and additional practice/sketchbook r
 - [x] No Netlify upload or deployment.
 
 Validation: build and standalone assembly passed; Vitest 13/13; full Playwright suite 17/17. After the final diary content-boundary adjustment, affected diary/HTML/studio checks passed 6/6; after expanded-map changes, affected foundation/HTML/map checks passed 8/8. No application deployment or main-branch update.
+
+## Correspondence follow-up — 2026-11-05
+
+- Replaced generic cursive/Georgia fallback in practice and letter handwriting with locally bundled Allura and Nanum Pen. Handwriting is the initial letter view, text mode remains available, and HTML wrapping handles Korean and long lines. Fonts and their licenses are embedded in the standalone review.
+- Mini-map is 150px on desktop / 112px on phone, including activity screens. Hit area remains greater than 44px. Fixed sparkle targets have a dark sage backing, gold border and a pulse that never fades to invisibility; reduced motion is respected.
+- OpenAI correspondence has explicit content review, optional selected history, immutable generated replies, source labels and unread arrival state. The app-level delivery controller survives closing the mailbox and reload. Failed/uncertain requests expose recovery instead of silently issuing another billed generation.
+- Server has an authenticated loopback HTTP gateway, origin checks, persistent request IDs and UTC daily reservations. Production hosting remains a separate step; no Netlify deployment was performed. Real OpenAI access is unverified because no key is configured.
+- Native captures: `test-results/cursive-letter.png`, `cursive-practice.png`, `clear-hotspots-phone.png`, `ai-consent-{390,800,1440}.png`, `ai-arrived-letter.png`. Letter/lesson font loading and standalone offline font loading are tested in Chromium.
+
+Follow-up verification: Vitest 17/17; server tests 9/9 including UTF-8 chunk boundaries; full browser suite 20/20 before the final recovery guards. The affected correspondence/standalone/map checks then passed 7 cases plus the added expiry-recovery case (1/1). Build, self-contained assembly, embedded font/license inspection and static ZIP verification passed. No actual OpenAI call or Netlify deployment was performed.

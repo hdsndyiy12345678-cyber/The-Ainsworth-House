@@ -6,3 +6,7 @@ playwright-report/
 *.tsbuildinfo
 release/
 review/screenshots/
+.ainsworth-ai/
+.env
+.env.*
+!.env.example

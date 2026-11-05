@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:ai": "NODE_USE_ENV_PROXY=1 node --env-file-if-exists=.env.local server/ai-server.mjs",
+    "test:ai": "node --test server/*.test.mjs",
     "build": "tsc -b && vite build && node scripts/build-sw.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",

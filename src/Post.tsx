@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import type { Letter, Resident, State } from "./store";
 import { uid } from "./store";
+import { AiConnection, AiLetter } from "./AiPost";
+import { isOutgoing, letterOrigin } from "./ai";
 export type ModuleProps = {
   state: State;
   update: (f: (s: State) => State) => void;
@@ -42,7 +44,7 @@ export function Post({
     [profile, setProfile] = useState<Resident | null>(null),
     [showProfiles, setShowProfiles] = useState(profiles),
     [deleteId, setDeleteId] = useState(""),
-    [view, setView] = useState<"text" | "handwriting">("text");
+    [view, setView] = useState<"text" | "handwriting">("handwriting");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const letter = state.letters.find((l) => l.id === selected);
   const resident = state.residents.find((p) => p.id === letter?.person);
@@ -71,8 +73,15 @@ export function Post({
       notify("제목과 본문을 적어 주세요.");
       return;
     }
-    const value = {
+    const value: Letter = {
       ...editor,
+      source: "user",
+      ...(send
+        ? {
+            sentAt: new Date().toISOString(),
+            threadId: editor.threadId || editor.id,
+          }
+        : {}),
       folder: send ? ("sent" as const) : ("draft" as const),
     };
     update((s) => ({
@@ -84,7 +93,7 @@ export function Post({
     setSelected(value.id);
     notify(
       send
-        ? "보낸 편지함에 기록했어요. 실제 전송이나 자동 답장은 제공하지 않습니다."
+        ? "편지를 봉인해 보낸 편지함에 보관했어요. AI 답장은 전송 내용을 확인한 뒤 요청할 수 있어요."
         : "임시 보관함에 저장했어요.",
     );
   }
@@ -107,6 +116,9 @@ export function Post({
               {["받은 편지", "보낸 편지", "임시 보관", "보관함"][i]}{" "}
               <small>
                 {state.letters.filter((l) => l.folder === f).length}
+                {f === "inbox" &&
+                  state.letters.some((l) => l.folder === "inbox" && !l.read) &&
+                  ` · 새 편지 ${state.letters.filter((l) => l.folder === "inbox" && !l.read).length}`}
               </small>
             </button>
           ))}
@@ -135,11 +147,13 @@ export function Post({
           <Feather size={14} /> 편지 쓰기
         </button>
       </div>
+      <AiConnection />
       {showProfiles ? (
         <>
           <p className="muted">
             1994년을 기본 배경으로 사용합니다. 인물의 연도와 관계를 편지의
-            날짜에 맞춰 관리하세요. AI 자동 생성은 연결되지 않았습니다.
+            날짜에 맞춰 관리하세요. 답장을 요청할 때 이 인물의 설정만 함께
+            전송됩니다.
           </p>
           <div className="profile-layout">
             <div className="profile-list">
@@ -314,7 +328,7 @@ export function Post({
                     </small>
                     <strong>{l.subject}</strong>
                     <span>
-                      {l.date} · {l.sample ? "예제 편지" : "내가 작성한 편지"}
+                      {l.date} · {letterOrigin(l)}
                     </span>
                   </button>
                 ))
@@ -442,7 +456,7 @@ export function Post({
                 <>
                   <div className="letter-actions">
                     <span className="badge">
-                      {letter.sample ? "예제 편지" : "사용자 작성"} ·{" "}
+                      {letterOrigin(letter)} ·{" "}
                       {letter.folder === "sent"
                         ? "로컬 발송 기록"
                         : letter.folder === "draft"
@@ -487,6 +501,25 @@ export function Post({
                       <Trash2 size={15} />
                     </button>
                   </div>
+                  <AiLetter
+                    key={letter.id}
+                    state={state}
+                    update={update}
+                    notify={notify}
+                    letter={letter}
+                    onArrived={(id) => {
+                      setFolder("inbox");
+                      setPerson("all");
+                      setQuery("");
+                      setSelected(id);
+                      update((s) => ({
+                        ...s,
+                        letters: s.letters.map((l) =>
+                          l.id === id ? { ...l, read: true } : l,
+                        ),
+                      }));
+                    }}
+                  />
                   <div className="view-tabs">
                     <button
                       onClick={() => setView("text")}
@@ -513,36 +546,13 @@ export function Post({
                     {view === "text" ? (
                       <p className="letter-body">{letter.body}</p>
                     ) : (
-                      <svg
+                      <div
                         className="handwriting"
-                        viewBox={`0 0 650 ${Math.max(300, letter.body.split("\n").reduce((n, l) => n + Math.max(1, Math.ceil(l.length / 58)), 0) * 32 + 60)}`}
                         role="img"
                         aria-label="필기체로 표시한 편지"
                       >
-                        <title>{letter.body}</title>
-                        <text
-                          x="28"
-                          y="35"
-                          fontFamily={
-                            resident?.paper === "grey" ? "Georgia" : "cursive"
-                          }
-                          fontStyle="italic"
-                          fontSize="20"
-                          fill="#4f4939"
-                        >
-                          {letter.body
-                            .split("\n")
-                            .flatMap(
-                              (line) =>
-                                line.match(/.{1,58}(?:\s|$)|.{1,58}/g) || [""],
-                            )
-                            .map((line, i) => (
-                              <tspan x="28" dy={i ? 32 : 0} key={i}>
-                                {line || " "}
-                              </tspan>
-                            ))}
-                        </text>
-                      </svg>
+                        {letter.body}
+                      </div>
                     )}
                     {letter.image && (
                       <img
@@ -563,6 +573,9 @@ export function Post({
                           subject: `Re: ${letter.subject}`,
                           body: `Dear ${resident?.name.split(" ")[0] || "friend"},\n\n`,
                           date: letter.date,
+                          replyTo: letter.id,
+                          threadId: letter.threadId || letter.id,
+                          source: "user",
                           folder: "draft",
                           read: true,
                           sample: false,
@@ -572,11 +585,14 @@ export function Post({
                     >
                       답장 쓰기
                     </button>
-                    {!letter.sample && (
-                      <button onClick={() => setEditor({ ...letter })}>
-                        편지 수정
-                      </button>
-                    )}
+                    {isOutgoing(letter) &&
+                      !state.mailJobs?.some(
+                        (j) => j.letterId === letter.id,
+                      ) && (
+                        <button onClick={() => setEditor({ ...letter })}>
+                          편지 수정
+                        </button>
+                      )}
                     <button
                       onClick={() => {
                         update((s) => ({
@@ -633,8 +649,8 @@ export function Post({
             </div>
           </div>
           <p className="muted">
-            이 우편함은 개인용 로컬 기록입니다. 실제 배송과 AI 자동 답장은
-            제공하지 않습니다. 예제는 창작된 가상의 편지입니다.
+            편지와 답장은 이 브라우저에 보관됩니다. AI 답장은 요청한 경우에만
+            생성되며 예제·사용자 작성·AI 창작 답장을 구분해 표시합니다.
           </p>
         </>
       )}
