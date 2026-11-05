@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "The Ainsworth House",
+  "short_name": "Ainsworth",
+  "description": "A little place for your own kind of magic.",
+  "lang": "ko",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#eeeadf",
+  "theme_color": "#273d34",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
