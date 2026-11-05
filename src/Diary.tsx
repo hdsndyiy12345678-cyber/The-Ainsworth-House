@@ -13,6 +13,7 @@ export function Diary({ state, update, notify }: ModuleProps) {
     [trash, setTrash] = useState(false),
     [bookmarks, setBookmarks] = useState(false),
     [tab, setTab] = useState("write");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const entry = state.entries.find((e) => e.id === selected);
   const visible = state.entries
     .filter(
@@ -55,7 +56,9 @@ export function Diary({ state, update, notify }: ModuleProps) {
   }
   const index = visible.findIndex((e) => e.id === selected);
   return (
-    <div className={`diary-module cover-${state.cover}`}>
+    <div
+      className={`diary-module cover-${state.cover} ${tab === "ink" && entry && !entry.deleted ? "ink-mode" : ""}`}
+    >
       <div className="module-toolbar">
         <div className="tabs">
           <button
@@ -77,6 +80,12 @@ export function Diary({ state, update, notify }: ModuleProps) {
             휴지통 · 복원
           </button>
         </div>
+        <button
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen(!filtersOpen)}
+        >
+          기억 찾기
+        </button>
         <label className="cover-select">
           표지
           <select
@@ -92,26 +101,28 @@ export function Diary({ state, update, notify }: ModuleProps) {
           <Plus size={14} /> 새 일기
         </button>
       </div>
-      <div className="diary-filters">
-        <input
-          aria-label="일기 검색"
-          placeholder="기억 속 문장 찾기"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <input
-          aria-label="일기 날짜 필터"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-        <button
-          onClick={() => setBookmarks(!bookmarks)}
-          aria-pressed={bookmarks}
-        >
-          <Bookmark size={15} /> 책갈피
-        </button>
-      </div>
+      {filtersOpen && (
+        <div className="diary-filters">
+          <input
+            aria-label="일기 검색"
+            placeholder="기억 속 문장 찾기"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <input
+            aria-label="일기 날짜 필터"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <button
+            onClick={() => setBookmarks(!bookmarks)}
+            aria-pressed={bookmarks}
+          >
+            <Bookmark size={15} /> 책갈피
+          </button>
+        </div>
+      )}
       <div className="diary-spread">
         <aside className="diary-index">
           <div className="diary-monogram">
@@ -159,198 +170,220 @@ export function Diary({ state, update, notify }: ModuleProps) {
                 </div>
               ) : (
                 <>
-                  <div className="diary-meta">
+                  <section className="journal-left">
+                    <div className="diary-meta">
+                      <label>
+                        날짜
+                        <input
+                          type="date"
+                          value={entry.date}
+                          onChange={(e) => patch({ date: e.target.value })}
+                        />
+                      </label>
+                      <label>
+                        마음
+                        <select
+                          value={entry.mood}
+                          onChange={(e) => patch({ mood: e.target.value })}
+                        >
+                          {[
+                            "평온",
+                            "설렘",
+                            "기쁨",
+                            "쓸쓸함",
+                            "불안",
+                            "고마움",
+                          ].map((x) => (
+                            <option key={x}>{x}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        날씨
+                        <select
+                          value={entry.weather}
+                          onChange={(e) => patch({ weather: e.target.value })}
+                        >
+                          {["비", "맑음", "흐림", "눈"].map((x) => (
+                            <option key={x}>{x}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
                     <label>
-                      날짜
+                      오늘의 제목
                       <input
-                        type="date"
-                        value={entry.date}
-                        onChange={(e) => patch({ date: e.target.value })}
+                        className="diary-title"
+                        placeholder="기억하고 싶은 하루"
+                        value={entry.title}
+                        onChange={(e) => patch({ title: e.target.value })}
                       />
                     </label>
-                    <label>
-                      마음
-                      <select
-                        value={entry.mood}
-                        onChange={(e) => patch({ mood: e.target.value })}
+                    <div className="tabs">
+                      <button
+                        className={tab === "write" ? "selected" : ""}
+                        onClick={() => setTab("write")}
                       >
-                        {[
-                          "평온",
-                          "설렘",
-                          "기쁨",
-                          "쓸쓸함",
-                          "불안",
-                          "고마움",
-                        ].map((x) => (
-                          <option key={x}>{x}</option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      날씨
-                      <select
-                        value={entry.weather}
-                        onChange={(e) => patch({ weather: e.target.value })}
+                        기록
+                      </button>
+                      <button
+                        className={tab === "ink" ? "selected" : ""}
+                        onClick={() => setTab("ink")}
                       >
-                        {["비", "맑음", "흐림", "눈"].map((x) => (
-                          <option key={x}>{x}</option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <label>
-                    오늘의 제목
-                    <input
-                      className="diary-title"
-                      placeholder="기억하고 싶은 하루"
-                      value={entry.title}
-                      onChange={(e) => patch({ title: e.target.value })}
-                    />
-                  </label>
-                  <div className="tabs">
-                    <button
-                      className={tab === "write" ? "selected" : ""}
-                      onClick={() => setTab("write")}
-                    >
-                      기록
-                    </button>
-                    <button
-                      className={tab === "ink" ? "selected" : ""}
-                      onClick={() => setTab("ink")}
-                    >
-                      손글씨
-                    </button>
-                    <button
-                      className={tab === "references" ? "selected" : ""}
-                      onClick={() => setTab("references")}
-                    >
-                      이날의 편지와 사건
-                    </button>
-                  </div>
-                  {tab === "write" ? (
-                    <>
-                      <label>
-                        <span className="sr-only">일기 본문</span>
-                        <textarea
-                          className="diary-body"
-                          rows={12}
-                          placeholder="Dear diary, …"
-                          value={entry.body}
-                          onChange={(e) => patch({ body: e.target.value })}
-                        />
-                      </label>
-                      <div className="diary-decor">
+                        손글씨
+                      </button>
+                      <button
+                        className={tab === "references" ? "selected" : ""}
+                        onClick={() => setTab("references")}
+                      >
+                        이날의 편지와 사건
+                      </button>
+                    </div>
+                    {tab === "write" ? (
+                      <>
                         <label>
-                          종이
-                          <select
-                            value={entry.paper}
-                            onChange={(e) => patch({ paper: e.target.value })}
-                          >
-                            <option value="cream">크림</option>
-                            <option value="sage">세이지</option>
-                            <option value="rose">장미</option>
-                          </select>
-                        </label>
-                        <label>
-                          스티커
-                          <select
-                            value={entry.sticker}
-                            onChange={(e) => patch({ sticker: e.target.value })}
-                          >
-                            {["", "❦", "✦", "☾", "♡", "✿"].map((x) => (
-                              <option key={x} value={x}>
-                                {x || "없음"}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <button
-                          aria-pressed={entry.bookmark}
-                          onClick={() => patch({ bookmark: !entry.bookmark })}
-                        >
-                          <Bookmark size={15} /> 책갈피
-                        </button>
-                      </div>
-                      <span className="diary-sticker" aria-label="일기 장식">
-                        {entry.sticker}
-                      </span>
-                      <label className="attachment">
-                        사진 첨부 · 4MB 이하
-                        <input
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp,image/gif"
-                          onChange={async (e) => {
-                            const f = e.target.files?.[0];
-                            if (f)
-                              try {
-                                patch({ image: await readImage(f) });
-                              } catch (err) {
-                                notify((err as Error).message);
-                              }
-                          }}
-                        />
-                      </label>
-                      {entry.image && (
-                        <>
-                          <img
-                            src={entry.image}
-                            className="attachment-preview"
-                            alt="일기에 첨부한 사진"
+                          <span className="sr-only">일기 본문</span>
+                          <textarea
+                            className="diary-body"
+                            rows={8}
+                            placeholder="Dear diary, …"
+                            value={entry.body}
+                            onChange={(e) => patch({ body: e.target.value })}
                           />
-                          <button onClick={() => patch({ image: undefined })}>
-                            사진 제거
+                        </label>
+                        <div className="diary-decor">
+                          <label>
+                            종이
+                            <select
+                              value={entry.paper}
+                              onChange={(e) => patch({ paper: e.target.value })}
+                            >
+                              <option value="cream">크림</option>
+                              <option value="sage">세이지</option>
+                              <option value="rose">장미</option>
+                            </select>
+                          </label>
+                          <label>
+                            스티커
+                            <select
+                              value={entry.sticker}
+                              onChange={(e) =>
+                                patch({ sticker: e.target.value })
+                              }
+                            >
+                              {["", "❦", "✦", "☾", "♡", "✿"].map((x) => (
+                                <option key={x} value={x}>
+                                  {x || "없음"}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <button
+                            aria-pressed={entry.bookmark}
+                            onClick={() => patch({ bookmark: !entry.bookmark })}
+                          >
+                            <Bookmark size={15} /> 책갈피
                           </button>
-                        </>
-                      )}
-                    </>
-                  ) : tab === "ink" ? (
-                    <Ink
-                      key={entry.id}
-                      strokes={entry.strokes}
-                      onChange={(strokes) => patch({ strokes })}
-                    />
-                  ) : (
-                    <section className="date-references">
-                      <p className="muted">
-                        원본 기록을 날짜로 참조합니다. 일기에 내용을 자동
-                        복사하지 않습니다.
-                      </p>
-                      {state.letters
-                        .filter((l) => l.date === entry.date)
-                        .map((l) => (
-                          <article key={l.id}>
-                            <small>
-                              OWL POST · {l.sample ? "예제" : "내 편지"}
-                            </small>
-                            <h3>{l.subject}</h3>
-                            <p>{l.body.slice(0, 180)}</p>
-                          </article>
-                        ))}
-                      {!state.letters.some((l) => l.date === entry.date) && (
-                        <p className="muted">이날 기록된 편지가 없습니다.</p>
-                      )}
-                      {state.mystery.solved && (
-                        <p>
-                          사건 수첩: The Missing Moonstone은 해결되었습니다.
-                          (저택 전체 진행 기록)
+                        </div>
+                        <span className="diary-sticker" aria-label="일기 장식">
+                          {entry.sticker}
+                        </span>
+                        <label className="attachment">
+                          사진 첨부 · 4MB 이하
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp,image/gif"
+                            onChange={async (e) => {
+                              const f = e.target.files?.[0];
+                              if (f)
+                                try {
+                                  patch({ image: await readImage(f) });
+                                } catch (err) {
+                                  notify((err as Error).message);
+                                }
+                            }}
+                          />
+                        </label>
+                        {entry.image && (
+                          <>
+                            <img
+                              src={entry.image}
+                              className="attachment-preview"
+                              alt="일기에 첨부한 사진"
+                            />
+                            <button onClick={() => patch({ image: undefined })}>
+                              사진 제거
+                            </button>
+                          </>
+                        )}
+                      </>
+                    ) : tab === "ink" ? (
+                      <Ink
+                        key={entry.id}
+                        strokes={entry.strokes}
+                        onChange={(strokes) => patch({ strokes })}
+                      />
+                    ) : (
+                      <section className="date-references">
+                        <p className="muted">
+                          원본 기록을 날짜로 참조합니다. 일기에 내용을 자동
+                          복사하지 않습니다.
                         </p>
-                      )}
-                    </section>
+                        {state.letters
+                          .filter((l) => l.date === entry.date)
+                          .map((l) => (
+                            <article key={l.id}>
+                              <small>
+                                OWL POST · {l.sample ? "예제" : "내 편지"}
+                              </small>
+                              <h3>{l.subject}</h3>
+                              <p>{l.body.slice(0, 180)}</p>
+                            </article>
+                          ))}
+                        {!state.letters.some((l) => l.date === entry.date) && (
+                          <p className="muted">이날 기록된 편지가 없습니다.</p>
+                        )}
+                        {state.mystery.solved && (
+                          <p>
+                            사건 수첩: The Missing Moonstone은 해결되었습니다.
+                            (저택 전체 진행 기록)
+                          </p>
+                        )}
+                      </section>
+                    )}
+                    <div className="button-row">
+                      <button
+                        onClick={() => {
+                          patch({ deleted: true });
+                          setSelected(null);
+                          notify(
+                            "일기를 휴지통에 보관했어요. 언제든 복원할 수 있어요.",
+                          );
+                        }}
+                      >
+                        일기를 휴지통으로
+                      </button>
+                      <span className="muted">
+                        변경 내용은 자동 저장됩니다.
+                      </span>
+                    </div>
+                  </section>
+                  {tab === "write" && (
+                    <aside className="journal-right">
+                      <h3>A little magic, every day</h3>
+                      <Ink
+                        compact
+                        strokes={entry.strokes}
+                        onChange={(strokes) => patch({ strokes })}
+                      />
+                      <button
+                        className="journal-tools-link"
+                        onClick={() => setTab("ink")}
+                      >
+                        필기 도구 열기
+                      </button>
+                    </aside>
                   )}
-                  <div className="button-row">
-                    <button
-                      onClick={() => {
-                        patch({ deleted: true });
-                        setSelected(null);
-                        notify(
-                          "일기를 휴지통에 보관했어요. 언제든 복원할 수 있어요.",
-                        );
-                      }}
-                    >
-                      일기를 휴지통으로
-                    </button>
-                    <span className="muted">변경 내용은 자동 저장됩니다.</span>
-                  </div>
                 </>
               )}
               <div className="page-nav">

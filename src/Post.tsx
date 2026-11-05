@@ -43,6 +43,7 @@ export function Post({
     [showProfiles, setShowProfiles] = useState(profiles),
     [deleteId, setDeleteId] = useState(""),
     [view, setView] = useState<"text" | "handwriting">("text");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const letter = state.letters.find((l) => l.id === selected);
   const resident = state.residents.find((p) => p.id === letter?.person);
   const list = state.letters.filter(
@@ -117,6 +118,12 @@ export function Post({
           }}
         >
           인물 수첩
+        </button>
+        <button
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen(!filtersOpen)}
+        >
+          편지 찾기
         </button>
         <button
           className="primary"
@@ -253,33 +260,35 @@ export function Post({
         </>
       ) : (
         <>
-          <div className="filter-row">
-            <label>
-              인물별 대화
-              <select
-                value={person}
-                onChange={(e) => {
-                  setPerson(e.target.value);
-                  setSelected(null);
-                }}
-              >
-                <option value="all">모든 인물</option>
-                {state.residents.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              편지 검색
-              <input
-                placeholder="제목이나 문장으로 찾기"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </label>
-          </div>
+          {filtersOpen && (
+            <div className="filter-row">
+              <label>
+                인물별 대화
+                <select
+                  value={person}
+                  onChange={(e) => {
+                    setPerson(e.target.value);
+                    setSelected(null);
+                  }}
+                >
+                  <option value="all">모든 인물</option>
+                  {state.residents.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                편지 검색
+                <input
+                  placeholder="제목이나 문장으로 찾기"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </label>
+            </div>
+          )}
           <div className="mail-layout">
             <div className="letter-list">
               {list.length ? (
@@ -545,6 +554,24 @@ export function Post({
                     <p className="signature">{signature}</p>
                   </article>
                   <div className="button-row">
+                    <button
+                      className="primary"
+                      onClick={() => {
+                        setEditor({
+                          id: uid(),
+                          person: letter.person,
+                          subject: `Re: ${letter.subject}`,
+                          body: `Dear ${resident?.name.split(" ")[0] || "friend"},\n\n`,
+                          date: letter.date,
+                          folder: "draft",
+                          read: true,
+                          sample: false,
+                        });
+                        setSelected(null);
+                      }}
+                    >
+                      답장 쓰기
+                    </button>
                     {!letter.sample && (
                       <button onClick={() => setEditor({ ...letter })}>
                         편지 수정

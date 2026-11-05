@@ -16,7 +16,7 @@ for file in files:
     relative = file.relative_to(DIST).as_posix()
     if file.is_symlink() or not file.resolve().is_relative_to(DIST.resolve()):
         raise SystemExit(f"Refusing to package a symlink: {relative}")
-    if relative not in KNOWN and not re.fullmatch(r"assets/[A-Za-z0-9_-]+\.(css|js)", relative):
+    if relative not in KNOWN and not re.fullmatch(r"(assets/[A-Za-z0-9_-]+\.(css|js)|art/[a-z-]+\.webp)", relative):
         raise SystemExit(f"Unexpected build file; review before packaging: {relative}")
 missing = KNOWN - {p.relative_to(DIST).as_posix() for p in files}
 if missing:

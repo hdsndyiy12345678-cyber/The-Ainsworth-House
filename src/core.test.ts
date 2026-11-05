@@ -74,3 +74,54 @@ describe("canonical case", () => {
     expect(Object.isFrozen(CASE.truth)).toBe(true);
   });
 });
+
+describe("additional studio records remain backwards-compatible", () => {
+  it("round trips separate practice pages and pixel sketchbooks", () => {
+    const s = initialState();
+    s.atelier = {
+      strokes: [],
+      pixels: Array(256).fill(""),
+      practicePages: {
+        "letters:0": [
+          {
+            color: "#536747",
+            width: 3,
+            erase: false,
+            points: [{ x: 20, y: 30, p: 0.7 }],
+          },
+        ],
+      },
+      pixelWorks: [
+        { id: "one", name: "My teacup", pixels: Array(256).fill("#536747") },
+      ],
+    };
+    expect(validateBackup(JSON.parse(JSON.stringify(s)))).toEqual(s);
+  });
+  it("rejects malformed practice strokes", () => {
+    const s = initialState() as any;
+    s.atelier = {
+      strokes: [],
+      pixels: Array(256).fill(""),
+      practicePages: {
+        bad: [
+          {
+            color: "#123456",
+            width: 3,
+            erase: false,
+            points: [{ x: "bad", y: 0, p: 1 }],
+          },
+        ],
+      },
+    };
+    expect(() => validateBackup(s)).toThrow();
+  });
+  it("rejects malformed pixel sketchbooks", () => {
+    const s = initialState() as any;
+    s.atelier = {
+      strokes: [],
+      pixels: Array(256).fill(""),
+      pixelWorks: [{ id: "one", name: "bad", pixels: [] }],
+    };
+    expect(() => validateBackup(s)).toThrow();
+  });
+});

@@ -1,0 +1,178 @@
+{
+  "hall": {
+    "source": "/workspace/design/ainsworth-storybook/production/hall.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 475240
+  },
+  "owlery": {
+    "source": "/workspace/design/ainsworth-storybook/production/owlery.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 546422
+  },
+  "bedroom": {
+    "source": "/workspace/design/ainsworth-storybook/production/bedroom.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 546606
+  },
+  "library": {
+    "source": "/workspace/design/ainsworth-storybook/production/library.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 558878
+  },
+  "conservatory": {
+    "source": "/workspace/design/ainsworth-storybook/production/conservatory.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 561642
+  },
+  "mystery": {
+    "source": "/workspace/design/ainsworth-storybook/production/mystery.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 441916
+  },
+  "atelier": {
+    "source": "/workspace/design/ainsworth-storybook/production/atelier.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 547120
+  },
+  "attic": {
+    "source": "/workspace/design/ainsworth-storybook/production/attic.png",
+    "size": [
+      1585,
+      992
+    ],
+    "bytes": 527970
+  },
+  "map": {
+    "source": "/workspace/design/ainsworth-storybook/production/map.png",
+    "size": [
+      1568,
+      1003
+    ],
+    "bytes": 481206
+  },
+  "wood": {
+    "source": "/workspace/design/ainsworth-storybook/production/wood.png",
+    "size": [
+      1586,
+      992
+    ],
+    "bytes": 309932
+  },
+  "paper": {
+    "source": "/workspace/design/ainsworth-storybook/production/paper.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "bytes": 82000
+  },
+  "rain": {
+    "source": "/workspace/design/ainsworth-storybook/production/rain.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "bytes": 79566
+  },
+  "collectibles": {
+    "source": "/workspace/design/ainsworth-storybook/production/collectibles.png",
+    "size": [
+      2172,
+      724
+    ],
+    "bytes": 390672
+  },
+  "fern": {
+    "source": "/workspace/design/ainsworth-storybook/production/fern.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "bytes": 493148
+  },
+  "portrait": {
+    "source": "/workspace/design/ainsworth-storybook/production/portrait.png",
+    "size": [
+      1086,
+      1448
+    ],
+    "bytes": 465286
+  },
+  "drawing": {
+    "source": "/workspace/design/ainsworth-storybook/drawing-room-day.png",
+    "size": [
+      1586,
+      992
+    ],
+    "bytes": 612038
+  },
+  "drawing-night": {
+    "source": "/workspace/design/ainsworth-storybook/drawing-room-night.png",
+    "size": [
+      1586,
+      992
+    ],
+    "bytes": 413962
+  },
+  "miso": {
+    "source": "/workspace/design/ainsworth-storybook/miso-pose-atlas.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "bytes": 554478
+  },
+  "owl": {
+    "source": "/workspace/design/ainsworth-storybook/owl-pose-atlas.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "bytes": 395746
+  },
+  "objects": {
+    "source": "/workspace/design/ainsworth-storybook/desk-object-atlas.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "bytes": 342608
+  },
+  "effects": {
+    "source": "/workspace/design/ainsworth-storybook/fire-candle-steam-atlas.png",
+    "size": [
+      1586,
+      992
+    ],
+    "bytes": 440000
+  },
+  "journal": {
+    "source": "/workspace/design/ainsworth-storybook/production/journal.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "bytes": 248994
+  }
+}

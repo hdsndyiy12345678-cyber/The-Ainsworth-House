@@ -1,3 +1,7 @@
+import { art } from "./assets";
+import { Practice } from "./Practice";
+import { PixelWorkbench } from "./PixelWorkbench";
+import { Sprite } from "./Scene";
 import { useState } from "react";
 import { BookOpen, Archive, Sparkles } from "lucide-react";
 import { Ink } from "./Ink";
@@ -32,83 +36,9 @@ export function Extras({
     });
   }
   if (panel === "practice")
-    return (
-      <>
-        <p className="prose">A quiet afternoon at Ainsworth House.</p>
-        <p className="muted">
-          문장의 기울기와 이어지는 획을 천천히 따라 써 보세요. 아래 연습장은
-          일기와 별도로 자동 저장됩니다.
-        </p>
-        <div className="cursive-example">
-          A quiet afternoon
-          <br />
-          Yours, Elena Ainsworth
-        </div>
-        <Ink strokes={atelier.strokes} onChange={changeInk} />
-      </>
-    );
+    return <Practice state={state} update={update} notify={notify} />;
   if (panel === "pixel")
-    return (
-      <div className="pixel-module">
-        <p className="muted">
-          작은 픽셀 정원을 만들어 보세요. 16 × 16 격자와 색은 자동 저장됩니다.
-        </p>
-        <div className="pixel-palette">
-          {[
-            "#536747",
-            "#b89b67",
-            "#60383e",
-            "#e9ddc4",
-            "#232c3d",
-            "#30241d",
-            "",
-          ].map((c) => (
-            <button
-              key={c}
-              style={{
-                background: c || "#fff8e2",
-                color: c === "#e9ddc4" || !c ? "#453b2a" : "#fff",
-              }}
-              aria-label={c ? `색상 ${c}` : "픽셀 지우개"}
-              aria-pressed={color === c}
-              onClick={() => setColor(c)}
-            >
-              {!c ? "지우개" : color === c ? "✓" : ""}
-            </button>
-          ))}
-        </div>
-        <div className="pixel-grid" aria-label="16 곱하기 16 픽셀 작업판">
-          {atelier.pixels.map((c, i) => (
-            <button
-              key={i}
-              aria-label={`${Math.floor(i / 16) + 1}행 ${(i % 16) + 1}열 픽셀`}
-              style={{ background: c || "#f3e9d2" }}
-              onClick={() => pixel(i)}
-            />
-          ))}
-        </div>
-        <button
-          onClick={() => {
-            const canvas = document.createElement("canvas");
-            canvas.width = 256;
-            canvas.height = 256;
-            const ctx = canvas.getContext("2d")!;
-            atelier.pixels.forEach((c, i) => {
-              if (c) {
-                ctx.fillStyle = c;
-                ctx.fillRect((i % 16) * 16, Math.floor(i / 16) * 16, 16, 16);
-              }
-            });
-            const a = document.createElement("a");
-            a.download = "elena-pixel-garden.png";
-            a.href = canvas.toDataURL();
-            a.click();
-          }}
-        >
-          픽셀 그림 PNG 내보내기
-        </button>
-      </div>
-    );
+    return <PixelWorkbench state={state} update={update} notify={notify} />;
   if (panel === "plant" || panel === "fern")
     return (
       <div className="plant-module">
@@ -116,7 +46,7 @@ export function Extras({
           className={`growing-fern grow-${Math.min(3, Math.floor(state.plants / 3))}`}
           aria-hidden="true"
         >
-          ❧
+          <img src={art("fern.webp")} alt="은빛 잎의 마법 양치식물" />
         </div>
         <h3>Moonlight Fern</h3>
         <p className="prose">
@@ -165,9 +95,11 @@ export function Extras({
   if (panel === "portrait")
     return (
       <div className="portrait-story">
-        <div className="old-portrait">
-          A<span>1894</span>
-        </div>
+        <img
+          className="old-portrait"
+          src={art("portrait.webp")}
+          alt="저택에 남은 오래된 초상화"
+        />
         <h3>The first light in the house</h3>
         <p className="prose">
           초상화의 모서리에 작은 글씨가 남아 있습니다. “집은 벽으로 완성되는
@@ -222,7 +154,18 @@ export function Extras({
                 state.collectibles.includes(id) ? "collected" : "locked"
               }
             >
-              <span>{state.collectibles.includes(id) ? icon : "?"}</span>
+              <span>
+                {state.collectibles.includes(id) ? (
+                  <Sprite
+                    kind="collectibles"
+                    pose={
+                      id === "brass-key" ? 0 : id === "pressed-fern" ? 1 : 2
+                    }
+                  />
+                ) : (
+                  <Archive size={45} />
+                )}
+              </span>
               <h3>
                 {state.collectibles.includes(id)
                   ? title

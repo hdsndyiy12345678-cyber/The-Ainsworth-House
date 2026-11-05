@@ -38,8 +38,12 @@ test("backup export, corruption rejection and explicit replacement", async ({
   });
   await d.getByRole("button", { name: "현재 기록을 덮어쓰고 복원" }).click();
   await d.getByRole("button", { name: "닫기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Drawing Room", exact: true }).click();
-  await page.getByRole("button", { name: "Miso와 교감하기" }).first().click();
+  await page
+    .getByRole("button", { name: "Backup Fern와 교감하기" })
+    .first()
+    .click();
   await expect(
     d.getByRole("heading", { name: "Backup Fern", exact: true }),
   ).toBeVisible();
@@ -49,6 +53,7 @@ test("conservatory, collections, library and atelier are functional", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "인트로 건너뛰기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Conservatory", exact: true }).click();
   await page.getByRole("button", { name: "마법 식물 돌보기" }).first().click();
   let d = page.getByRole("dialog");
@@ -56,10 +61,12 @@ test("conservatory, collections, library and atelier are functional", async ({
     await d.getByRole("button", { name: "물 주고 잎 관찰하기" }).click();
   await d.getByRole("button", { name: "떨어진 잎을 압화로 보관" }).click();
   await d.getByRole("button", { name: "닫기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Library", exact: true }).click();
   await page.getByRole("button", { name: "초상화의 비밀" }).first().click();
   await d.getByRole("button", { name: "작은 황동 열쇠 보관" }).click();
   await d.getByRole("button", { name: "닫기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Attic", exact: true }).click();
   await page.getByRole("button", { name: "수집품 상자" }).first().click();
   await expect(d.getByRole("heading", { name: "The brass key" })).toBeVisible();
@@ -67,6 +74,7 @@ test("conservatory, collections, library and atelier are functional", async ({
     d.getByRole("heading", { name: "A pressed fern" }),
   ).toBeVisible();
   await d.getByRole("button", { name: "닫기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Atelier", exact: true }).click();
   await page.getByRole("button", { name: "픽셀 아트 그리기" }).first().click();
   await d.getByRole("button", { name: "1행 1열 픽셀", exact: true }).click();
@@ -94,7 +102,9 @@ test("keyboard, browser back and responsive activity layouts", async ({
     page.getByRole("button", { name: "인트로 건너뛰기" }),
   ).toBeFocused();
   await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Drawing Room", exact: true }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Library", exact: true }).click();
   await page.goBack();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
@@ -148,6 +158,7 @@ test("production shell works after going offline", async ({
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Entrance Hall",
   );
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Drawing Room", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Drawing Room",
@@ -174,6 +185,7 @@ test("diary survives a full browser restart", async () => {
     let page = await context.newPage();
     await page.goto("http://127.0.0.1:5173");
     await page.getByRole("button", { name: "인트로 건너뛰기" }).click();
+    await page.getByRole("button", { name: "방 목록 열기" }).click();
     await page
       .getByRole("button", { name: "Drawing Room", exact: true })
       .click();

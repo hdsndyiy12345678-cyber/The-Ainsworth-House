@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { HouseNavigation } from "./HouseNavigation";
+import { MiniMap, ManorMap } from "./ManorMap";
+import { Sprite } from "./Scene";
+import { art, installArtTokens } from "./assets";
+import { useEffect, useContext, useRef, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -41,6 +45,7 @@ export function Modal({
   children: ReactNode;
   wide?: boolean;
 }) {
+  const nav = useContext(HouseNavigation);
   const ref = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
@@ -49,6 +54,11 @@ export function Modal({
     const el = ref.current!;
     el.focus();
     const handler = (e: KeyboardEvent) => {
+      if (
+        Array.from(document.querySelectorAll(".modal-backdrop")).at(-1) !==
+        el.parentElement
+      )
+        return;
       if (e.key === "Escape") close.current();
       if (e.key === "Tab") {
         const nodes = Array.from(
@@ -92,17 +102,32 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={`modal ${wide ? "wide" : ""}`}
+        data-surface={title}
       >
         <header>
           <div>
             <small>THE AINSWORTH HOUSE</small>
             <h2>{title}</h2>
           </div>
+          {nav && title !== "The Manor Map" && (
+            <button
+              className="icon-button modal-map"
+              aria-label="저택 지도"
+              onClick={nav.openMap}
+            >
+              <Map size={22} />
+            </button>
+          )}
           <button className="icon-button" aria-label="닫기" onClick={onClose}>
             <X size={22} />
           </button>
         </header>
         {children}
+        {nav && title !== "The Manor Map" && (
+          <div className="modal-floating-map">
+            <MiniMap room={nav.room} onClick={nav.openMap} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -113,6 +138,9 @@ export default function App() {
     [error, setError] = useState(""),
     [saved, setSaved] = useState("불러오는 중"),
     [panel, setPanel] = useState(""),
+    [mapOpen, setMapOpen] = useState(false),
+    [menuOpen, setMenuOpen] = useState(false),
+    [activitiesOpen, setActivitiesOpen] = useState(false),
     [opening, setOpening] = useState(false),
     [toast, setToast] = useState(""),
     [tick, setTick] = useState(Date.now());
@@ -121,6 +149,10 @@ export default function App() {
     if (ready && !state.entered) entryButton.current?.focus();
   }, [ready, state.entered]);
   const saveQueue = useRef(Promise.resolve());
+  const revision = useRef(0);
+  useEffect(() => {
+    installArtTokens();
+  }, []);
   const audio = useRef<AudioContext | null>(null);
   useEffect(() => {
     loadState()
@@ -142,10 +174,13 @@ export default function App() {
   useEffect(() => {
     if (!ready) return;
     setSaved("저장 중…");
+    const rev = ++revision.current;
     saveQueue.current = saveQueue.current
       .catch(() => {})
       .then(() => saveState(state))
-      .then(() => setSaved("모든 순간이 저장되었어요"))
+      .then(() => {
+        if (rev === revision.current) setSaved("모든 순간이 저장되었어요");
+      })
       .catch(() => {
         setSaved("저장 실패 — 백업을 내려받아 주세요");
       });
@@ -198,6 +233,9 @@ export default function App() {
       },
     }));
     setPanel("");
+    setMapOpen(false);
+    setMenuOpen(false);
+    setActivitiesOpen(false);
   }
   const hour = new Date(tick).getHours();
   const time =
@@ -225,6 +263,10 @@ export default function App() {
           ? "장작이 잦아들고 방이 고요해졌어요."
           : "마른 참나무 장작이 타오르기 시작해요.",
       );
+      return;
+    }
+    if (kind === "map") {
+      setMapOpen(true);
       return;
     }
     setPanel(kind);
@@ -282,392 +324,260 @@ export default function App() {
       </main>
     );
   return (
-    <div className={`app time-${time} ${!state.motion ? "no-motion" : ""}`}>
-      <aside className="sidebar" inert={!state.entered}>
-        <a
-          className="brand"
-          href="#hall"
-          onClick={(e) => {
-            e.preventDefault();
-            go("hall");
-          }}
-          aria-label="The Ainsworth House 현관"
+    <HouseNavigation.Provider
+      value={{ openMap: () => setMapOpen(true), go, room: state.room }}
+    >
+      <div
+        className={`app storybook time-${time} ${!state.motion ? "no-motion" : ""}`}
+      >
+        <main
+          className="full-manor"
+          inert={!state.entered || !!panel || mapOpen}
         >
-          <div className="crest">
-            A<span>✧</span>
-          </div>
-          <div>
-            THE AINSWORTH<span>HOUSE</span>
-          </div>
-          <small>EST. 1894 · WILTSHIRE</small>
-        </a>
-        <div className="resident">
-          <span className="avatar">E</span>
-          <div>
-            Elena Ainsworth<small>이 저택의 주인</small>
-          </div>
-          <span className="resident-dot" />
-        </div>
-        <p className="nav-label">YOUR LITTLE WORLD</p>
-        <nav aria-label="저택의 방">
-          {rooms.map((r, i) => {
-            const Icon = [
-              Home,
-              Flame,
-              Mail,
-              Moon,
-              BookOpen,
-              Sun,
-              Compass,
-              Feather,
-              Sparkles,
-            ][i];
-            return (
-              <button
-                key={r.id}
-                className={`nav-room ${state.room === r.id ? "active" : ""}`}
-                onClick={() => go(r.id)}
-                aria-current={state.room === r.id ? "page" : undefined}
-              >
-                <Icon size={17} />
-                <span>{r.name}</span>
-                {r.id === "owlery" &&
-                  state.letters.some(
-                    (l) => l.folder === "inbox" && !l.read,
-                  ) && <span className="mail-dot" />}
-              </button>
-            );
-          })}
-        </nav>
-        <div className="sidebar-bottom">
-          <button onClick={() => setPanel("map")}>
-            <Map size={17} />
-            저택 지도<span>↗</span>
-          </button>
-          <button onClick={() => setPanel("settings")}>
-            <Settings size={17} />
-            설정과 백업
-          </button>
-          <p>
-            Some places are a little more
-            <br />
-            than just a place.
-          </p>
-          <span>❦</span>
-        </div>
-      </aside>
-      <main className="main" inert={!state.entered}>
-        <header className="topbar">
-          <div>
-            <span className="tiny-star">✧</span> A place to call your own
-          </div>
-          <div className="top-actions">
-            <span className="weather-label">
-              {state.weather === "rain" ? "가벼운 비" : "맑은 하늘"}{" "}
-              <span>·</span>{" "}
-              {time === "day"
-                ? "오후의 햇살"
-                : time === "dusk"
-                  ? "해 질 녘"
-                  : "고요한 밤"}
-            </span>
+          <Scene state={state} time={time} onInteract={interact} />
+          <header className="floating-heading">
             <button
-              className="icon-button"
+              className="paper-icon"
+              aria-label="방 목록 열기"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <Compass size={24} />
+            </button>
+            <div>
+              <small>The Ainsworth House</small>
+              <h1>{current.name}</h1>
+            </div>
+          </header>
+          <div className="floating-controls">
+            <button
+              className="paper-icon"
               onClick={toggleSound}
               aria-label={state.sound ? "배경음 끄기" : "배경음 켜기"}
             >
-              {state.sound ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              {state.sound ? <Volume2 size={20} /> : <VolumeX size={20} />}
             </button>
             <button
-              className="icon-button mobile-map"
-              onClick={() => setPanel("map")}
-              aria-label="저택 지도"
+              className="paper-icon"
+              aria-label="설정과 백업"
+              onClick={() => setPanel("settings")}
             >
-              <Map size={20} />
+              <Settings size={20} />
             </button>
-          </div>
-        </header>
-        <section className="room-heading">
-          <div>
-            <div className="eyebrow">WELCOME HOME, ELENA</div>
-            <h1>
-              {current.name}
-              <span>✧</span>
-            </h1>
-            <p>{current.sub}</p>
-          </div>
-          <button className="outline-button" onClick={() => setPanel("map")}>
-            <Map size={16} /> Explore the house <ChevronRight size={15} />
-          </button>
-        </section>
-        <div className="scene-frame">
-          <div key={state.room} className={`scene scene-${state.room}`}>
-            <Scene
-              room={state.room}
-              fire={state.fire}
-              lights={state.lights}
-              petLook={state.pet.look}
-            />
-            <div className="light-wash" />
-            {state.weather === "rain" && (
-              <div className="rain" aria-hidden="true" />
-            )}
-            <span className="scene-location">
-              <span /> {current.floor} <i>·</i> {current.noun}
-            </span>
-            <div className="scene-caption">
-              <span>MAKE YOURSELF AT HOME</span>
-              <p>
-                {state.room === "hall"
-                  ? "문 너머로, 당신만의 이야기가 기다리고 있어요."
-                  : state.room === "drawing"
-                    ? "차가 식기 전에, 잠시 쉬어 가요."
-                    : "마음이 이끄는 곳에 잠시 머물러 보세요."}
-              </p>
-            </div>
-            {hotspots[state.room].map((h) => (
-              <button
-                key={h.kind}
-                className="hotspot"
-                style={{ left: `${h.x}%`, top: `${h.y}%` }}
-                onClick={() => interact(h.kind)}
-                aria-label={h.label}
-              >
-                <span>✧</span>
-                <span className="hotspot-label">{h.label}</span>
-              </button>
-            ))}
-            <button
-              className="scene-back"
-              onClick={() => {
-                if (state.room === "hall") setPanel("map");
-                else go("hall");
-              }}
-            >
-              <ArrowLeft size={15} />
-              {state.room === "hall" ? "저택 지도" : "Entrance Hall"}
-            </button>
-            <span className="scene-hint">✧ 빛나는 사물을 눌러 보세요</span>
-          </div>
-        </div>
-        <section className="below-scene">
-          <div className="house-note">
-            <span className="note-ornament">❧</span>
-            <div>
-              <small>A LITTLE NOTE FROM THE HOUSE</small>
-              <p>
-                {state.room === "hall"
-                  ? "서두르지 않아도 괜찮아요. 이곳의 시간은 당신의 것이니까요."
-                  : state.room === "drawing"
-                    ? `${state.pet.name}가 당신이 돌아오기를 기다리고 있었어요.`
-                    : "작은 발견 하나가 오래도록 남을 추억이 되기도 하죠."}
-              </p>
-            </div>
           </div>
           <button
-            className="post-note"
-            onClick={() => {
-              go("owlery");
-              setPanel("post");
-            }}
-          >
-            <div className="envelope-icon">
-              <Mail size={27} />
-              <span />
-            </div>
-            <div>
-              <small>OWL POST</small>
-              <p>
-                {state.letters.filter((l) => l.folder === "inbox" && !l.read)
-                  .length
-                  ? "당신에게 도착한 편지가 있어요"
-                  : "다정한 안부를 보내 볼까요?"}
-              </p>
-              <span>
-                우편함 들여다보기 <span>↗</span>
-              </span>
-            </div>
-          </button>
-        </section>
-        <div className="object-nav" aria-label="현재 방에서 할 수 있는 일">
-          {hotspots[state.room].map((h) => (
-            <button key={h.kind} onClick={() => interact(h.kind)}>
-              {h.label}
-              <ChevronRight size={13} />
-            </button>
-          ))}
-        </div>
-        <footer className="footer">
-          <span>
-            <Check size={12} /> {saved}
-          </span>
-          <span>
-            Wiltshire, England <i>·</i> Your own kind of magic
-          </span>
-        </footer>
-      </main>
-      {!state.entered && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="저택에 오신 것을 환영합니다"
-          onKeyDown={(e) => {
-            if (e.key === "Tab") {
-              const nodes = Array.from(
-                e.currentTarget.querySelectorAll<HTMLButtonElement>("button"),
-              ).filter((b) => b.getClientRects().length > 0);
-              if (e.shiftKey && document.activeElement === nodes[0]) {
-                e.preventDefault();
-                nodes.at(-1)?.focus();
-              } else if (
-                !e.shiftKey &&
-                document.activeElement === nodes.at(-1)
-              ) {
-                e.preventDefault();
-                nodes[0]?.focus();
-              }
+            className="room-back paper-button"
+            onClick={() =>
+              state.room === "hall" ? setMapOpen(true) : go("hall")
             }
-          }}
-          className={`intro ${opening ? "opening" : ""}`}
-        >
-          {opening && (
-            <button
-              className="animation-skip"
-              onClick={() => {
-                setOpening(false);
-                update((s) => ({ ...s, entered: true }));
-              }}
-            >
-              문 열림 건너뛰기 →
-            </button>
+          >
+            <ArrowLeft size={16} />
+            {state.room === "hall" ? "저택 지도" : "Entrance Hall"}
+          </button>
+          {menuOpen && (
+            <nav className="room-menu paper-surface" aria-label="저택의 방">
+              {rooms.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => go(r.id)}
+                  aria-label={r.name}
+                  aria-current={r.id === state.room ? "page" : undefined}
+                >
+                  {r.name}
+                  <small>{r.noun}</small>
+                </button>
+              ))}
+            </nav>
           )}
-          <div className="intro-door left-door" />
-          <div className="intro-door right-door" />
-          <div className="intro-content">
-            <div className="crest">
-              A<span>✧</span>
+          <div className="bottom-actions">
+            <button
+              className="paper-button"
+              onClick={() => setActivitiesOpen(!activitiesOpen)}
+              aria-expanded={activitiesOpen}
+            >
+              <Sparkles size={17} />이 방에서 할 수 있는 일
+            </button>
+            <button
+              className="paper-icon owl-post-shortcut"
+              aria-label="우편함 들여다보기"
+              onClick={() => {
+                go("owlery");
+                setPanel("post");
+              }}
+            >
+              <Mail size={21} />
+              {state.letters.some((l) => l.folder === "inbox" && !l.read) && (
+                <span className="unread-indicator" />
+              )}
+            </button>
+            <button
+              className="paper-icon"
+              aria-label="Explore the house"
+              onClick={() => setMapOpen(true)}
+            >
+              <Map size={21} />
+            </button>
+          </div>
+          {activitiesOpen && (
+            <div
+              className="activity-tray paper-surface"
+              aria-label="현재 방에서 할 수 있는 일"
+            >
+              {hotspots[state.room].map((h, i) => (
+                <button
+                  key={h.kind + i}
+                  onClick={() => {
+                    interact(h.kind);
+                    setActivitiesOpen(false);
+                  }}
+                >
+                  {h.label.replace("Miso", state.pet.name)}
+                  <ChevronRight size={16} />
+                </button>
+              ))}
             </div>
-            <div className="eyebrow">WILTSHIRE, ENGLAND · EST. 1894</div>
-            <h1>
-              The Ainsworth
-              <br />
-              <em>House</em>
-            </h1>
-            <p>조금 오래된 저택, 그리고 당신만의 마법.</p>
-            <button
-              ref={entryButton}
-              className="gold-button"
-              onClick={() => {
-                if (
-                  !state.motion ||
-                  matchMedia("(prefers-reduced-motion: reduce)").matches
-                )
-                  update((s) => ({ ...s, entered: true }));
-                else setOpening(true);
-              }}
-            >
-              저택의 문 열기 <ChevronRight size={16} />
-            </button>
-            <button
-              className="skip"
-              onClick={() => {
-                setOpening(false);
-                update((s) => ({ ...s, entered: true }));
-              }}
-            >
-              인트로 건너뛰기 →
-            </button>
-          </div>
+          )}
+          <p className="scene-instruction">
+            사물에 손을 뻗어 보세요
+            <span>작은 화면에서는 좌우로 둘러볼 수 있어요</span>
+          </p>
+        </main>
+        <div
+          className="persistent-tools"
+          inert={!state.entered || !!panel || mapOpen}
+        >
+          <MiniMap room={state.room} onClick={() => setMapOpen(true)} />
         </div>
-      )}
-      {panel === "map" && (
-        <Modal title="The Manor Map" onClose={() => setPanel("")} wide>
-          <p className="muted">
-            빛이 켜진 방은 당신이 머물렀던 곳이에요. 어느 문이든 열어 보세요.
-          </p>
-          <div className="manor-map">
-            {["Second floor", "First floor", "West wing", "Ground floor"].map(
-              (f) => (
-                <div className="map-floor" key={f}>
-                  <small>{f}</small>
-                  <div>
-                    {rooms
-                      .filter((r) => r.floor === f)
-                      .map((r) => (
-                        <button
-                          className={`${state.visited.includes(r.id) ? "visited" : ""} ${state.room === r.id ? "here" : ""}`}
-                          onClick={() => go(r.id)}
-                          key={r.id}
-                        >
-                          <span>
-                            {state.room === r.id
-                              ? "✦"
-                              : state.visited.includes(r.id)
-                                ? "✧"
-                                : "◇"}
-                          </span>
-                          <strong>{r.name}</strong>
-                          <small>{r.noun}</small>
-                          {state.room === r.id && <em>YOU ARE HERE</em>}
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              ),
-            )}
-          </div>
-          <p className="muted">
-            탐험한 방 {state.visited.length} / {rooms.length}
-          </p>
-        </Modal>
-      )}
-      {panel === "settings" && (
-        <Modal title="A few little preferences" onClose={() => setPanel("")}>
-          <SettingsPanel state={state} update={update} notify={setToast} />
-        </Modal>
-      )}
-      {panel === "window" && (
-        <Modal title="Beyond the window" onClose={() => setPanel("")}>
-          <p className="prose">
-            윌트셔의 오래된 느릅나무 너머로{" "}
-            {state.weather === "rain"
-              ? "빗방울이 유리창을 두드립니다."
-              : "맑은 하늘이 펼쳐집니다."}{" "}
-            저택 안에서는 천천히 흘러가는 시간을 골라도 좋아요.
-          </p>
-          <label>
-            창밖의 날씨
-            <select
-              value={state.weather}
-              onChange={(e) =>
-                update((s) => ({
-                  ...s,
-                  weather: e.target.value as State["weather"],
-                }))
+        <div className="save-indicator" role="status">
+          <Check size={11} />
+          {saved}
+        </div>
+        {!state.entered && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="저택에 오신 것을 환영합니다"
+            onKeyDown={(e) => {
+              if (e.key === "Tab") {
+                const nodes = Array.from(
+                  e.currentTarget.querySelectorAll<HTMLButtonElement>("button"),
+                ).filter((b) => b.getClientRects().length > 0);
+                if (e.shiftKey && document.activeElement === nodes[0]) {
+                  e.preventDefault();
+                  nodes.at(-1)?.focus();
+                } else if (
+                  !e.shiftKey &&
+                  document.activeElement === nodes.at(-1)
+                ) {
+                  e.preventDefault();
+                  nodes[0]?.focus();
+                }
               }
-            >
-              <option value="rain">가벼운 비</option>
-              <option value="clear">맑은 날</option>
-            </select>
-          </label>
-        </Modal>
-      )}
-      {panel && !["map", "settings", "window"].includes(panel) && (
-        <Activities
-          panel={panel}
-          state={state}
-          update={update}
-          onClose={() => setPanel("")}
-          notify={setToast}
-        />
-      )}
-      {toast && (
-        <div className="toast" role="status">
-          <Sparkles size={16} />
-          {toast}
-        </div>
-      )}
-    </div>
+            }}
+            className={`intro ${opening ? "opening" : ""}`}
+          >
+            {opening && (
+              <button
+                className="animation-skip"
+                onClick={() => {
+                  setOpening(false);
+                  update((s) => ({ ...s, entered: true }));
+                }}
+              >
+                문 열림 건너뛰기 →
+              </button>
+            )}
+            <div className="intro-door left-door" />
+            <div className="intro-door right-door" />
+            <div className="intro-content">
+              <div className="crest">
+                A<span>✧</span>
+              </div>
+              <div className="eyebrow">WILTSHIRE, ENGLAND · EST. 1894</div>
+              <h1>
+                The Ainsworth
+                <br />
+                <em>House</em>
+              </h1>
+              <p>조금 오래된 저택, 그리고 당신만의 마법.</p>
+              <button
+                ref={entryButton}
+                className="gold-button"
+                onClick={() => {
+                  if (
+                    !state.motion ||
+                    matchMedia("(prefers-reduced-motion: reduce)").matches
+                  )
+                    update((s) => ({ ...s, entered: true }));
+                  else setOpening(true);
+                }}
+              >
+                저택의 문 열기 <ChevronRight size={16} />
+              </button>
+              <button
+                className="skip"
+                onClick={() => {
+                  setOpening(false);
+                  update((s) => ({ ...s, entered: true }));
+                }}
+              >
+                인트로 건너뛰기 →
+              </button>
+            </div>
+          </div>
+        )}
+        {panel === "settings" && (
+          <Modal title="A few little preferences" onClose={() => setPanel("")}>
+            <SettingsPanel state={state} update={update} notify={setToast} />
+          </Modal>
+        )}
+        {panel === "window" && (
+          <Modal title="Beyond the window" onClose={() => setPanel("")}>
+            <p className="prose">
+              윌트셔의 오래된 느릅나무 너머로{" "}
+              {state.weather === "rain"
+                ? "빗방울이 유리창을 두드립니다."
+                : "맑은 하늘이 펼쳐집니다."}{" "}
+              저택 안에서는 천천히 흘러가는 시간을 골라도 좋아요.
+            </p>
+            <label>
+              창밖의 날씨
+              <select
+                value={state.weather}
+                onChange={(e) =>
+                  update((s) => ({
+                    ...s,
+                    weather: e.target.value as State["weather"],
+                  }))
+                }
+              >
+                <option value="rain">가벼운 비</option>
+                <option value="clear">맑은 날</option>
+              </select>
+            </label>
+          </Modal>
+        )}
+        {panel && !["map", "settings", "window"].includes(panel) && (
+          <Activities
+            panel={panel}
+            state={state}
+            update={update}
+            onClose={() => setPanel("")}
+            notify={setToast}
+          />
+        )}
+        {mapOpen && (
+          <Modal title="The Manor Map" onClose={() => setMapOpen(false)} wide>
+            <ManorMap room={state.room} visited={state.visited} go={go} />
+          </Modal>
+        )}
+        {toast && (
+          <div className="toast" role="status">
+            <Sparkles size={16} />
+            {toast}
+          </div>
+        )}
+      </div>
+    </HouseNavigation.Provider>
   );
 }
 function SettingsPanel({

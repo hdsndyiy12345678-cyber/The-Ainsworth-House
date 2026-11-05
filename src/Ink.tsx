@@ -3,8 +3,12 @@ import type { Stroke } from "./store";
 export function Ink({
   strokes,
   onChange,
+  guide,
+  compact = false,
 }: {
   strokes: Stroke[];
+  guide?: string;
+  compact?: boolean;
   onChange: (s: Stroke[]) => void;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null),
@@ -96,7 +100,7 @@ export function Ink({
     onChange([...strokes, result]);
   }
   return (
-    <div className="ink-pad">
+    <div className={`ink-pad ${compact ? "compact-ink" : ""}`}>
       <div className="ink-tools">
         <button
           type="button"
@@ -167,6 +171,15 @@ export function Ink({
       </div>
       <div className="ink-scroll">
         <div className="ink-sheet" style={{ width: `${zoom * 100}%` }}>
+          {guide && (
+            <div className="ink-guide" aria-hidden="true">
+              {[0, 1, 2, 3].map((i) => (
+                <span key={i}>
+                  {guide}　{guide.length < 10 ? guide : ""}
+                </span>
+              ))}
+            </div>
+          )}
           <canvas
             ref={canvas}
             width="1600"

@@ -106,7 +106,12 @@ export type Entry = {
   strokes: Stroke[];
 };
 export type State = {
-  atelier?: { strokes: Stroke[]; pixels: string[] };
+  atelier?: {
+    strokes: Stroke[];
+    pixels: string[];
+    practicePages?: Record<string, Stroke[]>;
+    pixelWorks?: { id: string; name: string; pixels: string[] }[];
+  };
   version: 1;
   entered: boolean;
   room: RoomId;
@@ -197,7 +202,11 @@ export function initialState(): State {
 class HouseDB extends Dexie {
   snapshots!: Table<{ id: string; value: State }>;
   constructor() {
-    super("ainsworth-house");
+    super(
+      typeof window !== "undefined" && window.__AINSWORTH_STANDALONE__
+        ? "ainsworth-house-preview-v1"
+        : "ainsworth-house",
+    );
     this.version(1).stores({ snapshots: "id" });
   }
 }
@@ -329,6 +338,54 @@ export function validateBackup(x: unknown): State {
         )
       )
         throw Error("작업실 필기가 손상되었습니다.");
+  }
+  if (object(x.atelier)) {
+    if (x.atelier.practicePages !== undefined) {
+      if (!object(x.atelier.practicePages))
+        throw Error("연습장 데이터가 손상되었습니다.");
+      for (const strokes of Object.values(x.atelier.practicePages)) {
+        if (!Array.isArray(strokes)) throw Error("연습 획이 손상되었습니다.");
+        for (const stroke of strokes)
+          if (
+            !object(stroke) ||
+            typeof stroke.color !== "string" ||
+            typeof stroke.width !== "number" ||
+            !Number.isFinite(stroke.width) ||
+            stroke.width <= 0 ||
+            typeof stroke.erase !== "boolean" ||
+            !Array.isArray(stroke.points) ||
+            !stroke.points.every(
+              (p) =>
+                object(p) &&
+                ["x", "y", "p"].every(
+                  (k) => typeof p[k] === "number" && Number.isFinite(p[k]),
+                ),
+            )
+          )
+            throw Error("연습 획이 손상되었습니다.");
+      }
+    }
+    if (x.atelier.pixelWorks !== undefined) {
+      if (
+        !Array.isArray(x.atelier.pixelWorks) ||
+        !x.atelier.pixelWorks.every(
+          (w) =>
+            object(w) &&
+            typeof w.id === "string" &&
+            typeof w.name === "string" &&
+            Array.isArray(w.pixels) &&
+            w.pixels.length === 256 &&
+            w.pixels.every(
+              (c) =>
+                typeof c === "string" &&
+                (c === "" || /^#[0-9a-fA-F]{6}$/.test(c)),
+            ),
+        ) ||
+        new Set(x.atelier.pixelWorks.map((w) => w.id)).size !==
+          x.atelier.pixelWorks.length
+      )
+        throw Error("픽셀 스케치북이 손상되었습니다.");
+    }
   }
   const mystery = x.mystery;
   if (

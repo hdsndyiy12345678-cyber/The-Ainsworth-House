@@ -4,6 +4,7 @@ test("diary auto-save, vector drawing, zoom, undo and recovery", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "인트로 건너뛰기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Drawing Room", exact: true }).click();
   await page.getByRole("button", { name: "일기장 펼치기" }).first().click();
   let d = page.getByRole("dialog");
@@ -15,6 +16,7 @@ test("diary auto-save, vector drawing, zoom, undo and recovery", async ({
   await d.locator("input[type=file]").setInputFiles("public/icon-192.png");
   await d.getByRole("button", { name: "손글씨", exact: true }).click();
   let canvas = d.getByLabel("손글씨 캔버스, 펜 또는 손가락으로 쓰기");
+  await canvas.scrollIntoViewIfNeeded();
   const box = (await canvas.boundingBox())!;
   await page.mouse.move(box.x + 30, box.y + 30);
   await page.mouse.down();
@@ -47,6 +49,7 @@ test("diary auto-save, vector drawing, zoom, undo and recovery", async ({
 test("companion interactions persist after reload", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "인트로 건너뛰기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Drawing Room", exact: true }).click();
   await page.getByRole("button", { name: "Miso와 교감하기" }).first().click();
   const d = page.getByRole("dialog");
@@ -58,7 +61,7 @@ test("companion interactions persist after reload", async ({ page }) => {
   await d.getByRole("button", { name: "이름 저장" }).click();
   await page.waitForTimeout(700);
   await page.reload();
-  await page.getByRole("button", { name: "Miso와 교감하기" }).first().click();
+  await page.getByRole("button", { name: "Fern와 교감하기" }).first().click();
   await expect(
     d.getByRole("heading", { name: "Fern", exact: true }),
   ).toBeVisible();

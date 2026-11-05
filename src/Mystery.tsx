@@ -1,3 +1,4 @@
+import { Sprite } from "./Scene";
 import { useState } from "react";
 import { Check, Search, Link as LinkIcon } from "lucide-react";
 import { CASE, judgeDeduction } from "./case";
@@ -25,7 +26,9 @@ export function Mystery({ state, update, notify }: ModuleProps) {
       {!caseOpen ? (
         <button className="case-cover" onClick={() => setCaseOpen(true)}>
           <div className="case-number">CASE No. 001</div>
-          <div className="moonstone">◇</div>
+          <div className="moonstone">
+            <Sprite kind="collectibles" pose={2} />
+          </div>
           <h3>{CASE.name}</h3>
           <p>서쪽 도서관의 사라진 월장석</p>
           <small>{CASE.date} · ORIGINAL FICTION</small>
@@ -109,6 +112,19 @@ export function Mystery({ state, update, notify }: ModuleProps) {
                   </h3>
                   {m.evidence.includes(e.id) ? (
                     <>
+                      <Sprite
+                        kind={e.id === "seal" ? "desk" : "collectibles"}
+                        pose={
+                          e.id === "key"
+                            ? 0
+                            : e.id === "dust"
+                              ? 2
+                              : e.id === "greenhouse"
+                                ? 1
+                                : 0
+                        }
+                        className="evidence-illustration"
+                      />
                       <p>{e.description}</p>
                       <span>
                         {e.time} · {e.reliability}

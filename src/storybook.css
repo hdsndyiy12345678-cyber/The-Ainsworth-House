@@ -1,0 +1,2750 @@
+:root {
+  --sage: #536747;
+  --ink: #3e4e35;
+  --paper: #f4ead1;
+  --line: #c8b58d;
+  --paper-art: none;
+  --wood-art: none;
+  color: var(--ink);
+}
+body {
+  overflow: hidden;
+  background: #c2aa7b;
+}
+button {
+  min-height: 44px;
+}
+button svg {
+  flex-shrink: 0;
+}
+input,
+select,
+textarea {
+  font-family: Georgia, "Batang", serif;
+  font-size: 15px;
+}
+button {
+  font-size: 14px;
+}
+input,
+select,
+textarea {
+  background: #fffbf2b0;
+}
+button:focus-visible {
+  outline: 3px solid #305b75;
+  outline-offset: 4px;
+}
+.storybook {
+  height: 100dvh;
+  min-height: 0;
+  display: block;
+  background: #bca179;
+}
+.full-manor {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.scene-viewport {
+  position: absolute;
+  inset: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+.scene-viewport::-webkit-scrollbar {
+  display: none;
+}
+.art-stage {
+  position: relative;
+  min-height: 100%;
+  flex-shrink: 0;
+  overflow: hidden;
+  isolation: isolate;
+  animation: room-enter 0.7s ease;
+}
+.art-plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+.art-plate.night-tint {
+  filter: brightness(0.48) saturate(0.78);
+}
+.art-plate.dusk-tint {
+  filter: brightness(0.83) sepia(0.13);
+}
+.lamps-out .art-plate {
+  filter: brightness(0.4) saturate(0.75);
+}
+.sprite {
+  display: block;
+  background-repeat: no-repeat;
+  width: 100%;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+.sprite-desk {
+  aspect-ratio: 1.5;
+}
+.sprite-effects {
+  aspect-ratio: 0.8;
+}
+.sprite-cat,
+.sprite-owl {
+  aspect-ratio: 1;
+}
+.scene-object {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: 0;
+  background: transparent !important;
+  min-width: 44px;
+  min-height: 44px;
+  z-index: 3;
+  border-radius: 8px;
+  filter: drop-shadow(0 3px 3px #402c201c);
+}
+.scene-object:hover {
+  filter: drop-shadow(0 0 8px #fff0bba8);
+}
+.fixed-object {
+  display: grid;
+  place-items: center;
+  color: #f8e4a2;
+  filter: drop-shadow(0 1px 3px #735f2e);
+  background: transparent;
+  width: 48px;
+  height: 48px;
+}
+.fixed-object svg {
+  animation: small-glint 4s ease-in-out infinite;
+}
+.object-tip {
+  position: absolute;
+  bottom: 88%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border: 1px solid #b39761;
+  border-radius: 8px;
+  padding: 11px 16px;
+  box-shadow: 0 3px 6px #503a242b;
+  font-size: 14px;
+  font-style: italic;
+  opacity: 0;
+  pointer-events: none;
+  color: #455638;
+  transition: opacity 0.15s;
+}
+.scene-object:hover .object-tip,
+.scene-object:focus-visible .object-tip {
+  opacity: 1;
+}
+.animal-object .pet-art {
+  animation: animal-breathe 4s ease-in-out infinite;
+}
+.is-night .animal-object {
+  filter: brightness(0.83) drop-shadow(0 2px 3px #0003);
+}
+.scene-quill {
+  position: absolute;
+  left: 79%;
+  top: 48%;
+  width: 9%;
+  pointer-events: none;
+  z-index: 2;
+}
+.scene-cup {
+  position: absolute;
+  left: 86%;
+  top: 60%;
+  width: 11%;
+  pointer-events: none;
+  z-index: 2;
+}
+.tea-steam {
+  position: absolute;
+  left: 30%;
+  top: -75%;
+  width: 45%;
+  opacity: 0.5;
+  animation: steam-rise 5s ease-in-out infinite;
+}
+.scene-candlestick {
+  position: absolute;
+  left: 77%;
+  top: 52%;
+  width: 9%;
+  border: 0;
+  padding: 0;
+  background: transparent !important;
+  z-index: 3;
+}
+.candle-tip {
+  position: absolute;
+  left: 27%;
+  top: -9%;
+  width: 28%;
+  animation: flame-flicker 2s ease-in-out infinite;
+}
+.placed-fire {
+  position: absolute;
+  left: 45%;
+  top: 39%;
+  width: 6%;
+  height: 11%;
+  pointer-events: none;
+  z-index: 2;
+}
+.fire-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: 400% 200% !important;
+}
+.fire-one {
+  animation: fire-cycle 3s infinite;
+}
+.fire-two {
+  animation: fire-cycle 3s -1s infinite;
+}
+.fire-three {
+  animation: fire-cycle 3s -2s infinite;
+}
+.window-weather {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.37;
+  z-index: 1;
+}
+.window-weather img {
+  width: 100%;
+  height: 180%;
+  object-fit: cover;
+  animation: window-rain 12s linear infinite;
+}
+.weather-drawing {
+  left: 66%;
+  top: 6%;
+  width: 30%;
+  height: 39%;
+  border-radius: 40% 40% 0 0;
+}
+.weather-owlery {
+  left: 81%;
+  top: 15%;
+  width: 14%;
+  height: 33%;
+}
+.weather-bedroom {
+  left: 71%;
+  top: 5%;
+  width: 27%;
+  height: 37%;
+}
+.weather-conservatory {
+  left: 47%;
+  top: 1%;
+  width: 50%;
+  height: 37%;
+}
+.weather-mystery {
+  left: 0;
+  top: 5%;
+  width: 15%;
+  height: 45%;
+}
+.paper-icon,
+.paper-button,
+.paper-surface,
+.persistent-map {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  color: #455638;
+  border: 1px solid #b29c72;
+  box-shadow: 0 2px 5px #513e2724;
+}
+.paper-icon {
+  padding: 10px;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+.paper-button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 6px;
+  padding: 10px 17px;
+  font-size: 14px;
+}
+.floating-heading {
+  position: absolute;
+  left: 24px;
+  top: 22px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  z-index: 5;
+}
+.floating-heading > div {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 10px 22px 13px;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px #59432022;
+}
+.floating-heading small {
+  font-size: 20px;
+  letter-spacing: 0.1px;
+  font-style: italic;
+}
+.floating-heading h1 {
+  font-size: 23px;
+  font-weight: 400;
+  margin: 5px 0 0;
+  line-height: 1.2;
+}
+.floating-controls {
+  position: absolute;
+  right: 23px;
+  top: 22px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.room-back {
+  position: absolute;
+  top: 130px;
+  left: 24px;
+  z-index: 5;
+}
+.room-menu {
+  position: absolute;
+  top: 80px;
+  left: 24px;
+  z-index: 7;
+  max-height: calc(100dvh - 220px);
+  width: 270px;
+  padding: 12px;
+  overflow: auto;
+  border-radius: 6px;
+}
+.room-menu button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid #bca97859;
+  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 16px;
+}
+.room-menu small {
+  font-size: 11px;
+  color: #8a7957;
+}
+.room-menu button[aria-current="page"] {
+  background: #a5b38b42;
+}
+.bottom-actions {
+  position: absolute;
+  right: 25px;
+  bottom: 26px;
+  z-index: 5;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.unread-indicator {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #93544b;
+  border: 2px solid #f4ead1;
+}
+.owl-post-shortcut {
+  position: relative;
+}
+.scene-instruction {
+  position: absolute;
+  bottom: 31px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-style: italic;
+  color: #f8efda;
+  text-shadow: 0 1px 5px #352519;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.scene-instruction span {
+  display: none;
+}
+.activity-tray {
+  position: absolute;
+  right: 25px;
+  bottom: 90px;
+  width: 300px;
+  border-radius: 6px;
+  padding: 12px;
+  z-index: 7;
+}
+.activity-tray button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #b8a17355;
+  font-size: 14px;
+  padding: 11px;
+}
+.persistent-tools {
+  position: fixed;
+  left: 22px;
+  bottom: 26px;
+  z-index: 9;
+}
+.persistent-map {
+  display: block;
+  width: 215px;
+  padding: 11px 13px 9px;
+  border-radius: 7px;
+  transform: rotate(-1deg);
+  text-align: left;
+}
+.mini-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+  font-style: italic;
+  margin-bottom: 5px;
+}
+.mini-art {
+  display: block;
+  position: relative;
+  aspect-ratio: 1.7;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.mini-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.current-pin {
+  position: absolute;
+  color: #556b40;
+  fill: #f3dfaa;
+  transform: translate(-50%, -100%);
+  filter: drop-shadow(0 1px 1px #5a4d30);
+}
+.save-indicator {
+  position: fixed;
+  left: 26px;
+  bottom: 5px;
+  color: #fff6db;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font:
+    10px Arial,
+    sans-serif;
+  text-shadow: 0 1px 4px #3f2f1c;
+  pointer-events: none;
+}
+.paper-button:hover,
+.paper-icon:hover {
+  background-color: #e9d9b6;
+}
+.toast {
+  left: 50%;
+  max-width: min(600px, 90vw);
+  font-size: 14px;
+  bottom: 25px;
+}
+/* Activity surfaces are real controls over reusable paper and wood art. */
+.modal-backdrop {
+  background-color: #b5935c;
+  background-image: var(--wood-art);
+  background-size: cover;
+  padding: 20px 30px;
+  z-index: 30;
+  backdrop-filter: none;
+  overflow: hidden;
+}
+.modal {
+  width: 100%;
+  max-width: 1500px;
+  height: calc(100dvh - 40px);
+  max-height: none;
+  padding: 18px 24px 24px;
+  background-color: #f1e6cc;
+  background-image: var(--paper-art);
+  background-size: 640px;
+  border: 1px solid #b9a074;
+  border-radius: 7px;
+  box-shadow: 0 8px 40px #503b2938;
+  overflow: auto;
+}
+.modal.wide {
+  width: 100%;
+  max-width: 1500px;
+}
+.modal > header {
+  padding-bottom: 15px;
+  margin-bottom: 22px;
+  position: relative;
+  gap: 12px;
+}
+.modal > header > div {
+  margin-right: auto;
+}
+.modal > header small {
+  font-size: 9px;
+}
+.modal h2 {
+  font-size: 30px;
+  margin: 5px 0 0;
+}
+.modal h3 {
+  font-size: 23px;
+}
+.modal p,
+.modal label,
+.muted {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.modal button {
+  font-size: 14px;
+}
+.modal .icon-button {
+  min-width: 44px;
+}
+.modal-floating-map {
+  position: fixed;
+  left: 43px;
+  bottom: 40px;
+  z-index: 31;
+}
+.modal-floating-map .persistent-map {
+  width: 190px;
+}
+.modal[data-surface="The Manor Map"] {
+  max-width: 1450px;
+  background-color: var(--paper);
+  height: auto;
+  max-height: calc(100dvh - 40px);
+}
+.expanded-map {
+  position: relative;
+}
+.map-house {
+  position: relative;
+  aspect-ratio: 1.6;
+  max-height: calc(100dvh - 190px);
+  margin: auto;
+}
+.map-house > img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.map-destination {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 110px;
+  min-height: 48px;
+  gap: 4px;
+  padding: 7px 12px;
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border: 1px solid #ac9365;
+  box-shadow: 0 2px 3px #4032211a;
+}
+.map-destination > span {
+  font-size: 16px;
+}
+.map-destination small {
+  font-size: 10px;
+}
+.map-destination svg {
+  position: absolute;
+  right: -5px;
+  top: -7px;
+  background: #ede3c5;
+  border-radius: 50%;
+  color: #677943;
+}
+.map-destination.here {
+  background-color: #d0d5b1;
+  border: 2px solid #7d8a5c;
+}
+.map-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px !important;
+  margin: 10px 0 0;
+}
+.map-legend > span {
+  margin-left: auto;
+}
+.post-module {
+  padding-left: 0;
+}
+.module-toolbar {
+  margin-bottom: 22px;
+}
+.tabs button {
+  font-size: 14px;
+  padding: 10px 15px;
+}
+.tabs small {
+  font-size: 11px;
+}
+.filter-row {
+  max-width: 650px;
+}
+.filter-row label {
+  font-size: 12px;
+}
+.filter-row input,
+.filter-row select {
+  font-size: 14px;
+}
+.mail-layout {
+  grid-template-columns: 270px 1fr;
+  gap: 32px;
+  min-height: calc(100dvh - 355px);
+}
+.letter-list {
+  max-height: calc(100dvh - 490px);
+  min-height: 200px;
+  overflow: auto;
+  padding: 0 13px 0 0;
+  border-right: 0;
+}
+.letter-list > button {
+  padding: 17px 12px;
+}
+.letter-list > button small {
+  font-size: 13px;
+}
+.letter-list > button strong {
+  font-size: 16px;
+}
+.letter-list > button > span {
+  font-size: 11px;
+}
+.letter-detail {
+  padding: 0 20px 0 10px;
+}
+.letter-paper {
+  background-color: #f8efd8;
+  background-image: var(--paper-art);
+  border: 1px solid #c4ad80;
+  padding: 35px 40px;
+  box-shadow: 0 5px 15px #654b2520;
+  min-height: 420px;
+}
+.letter-paper h3 {
+  font-size: 28px;
+}
+.letter-body {
+  font-size: 18px;
+  line-height: 2;
+  max-width: 65ch;
+}
+.letter-paper > small {
+  font-size: 13px;
+}
+.signature {
+  font-size: 25px;
+}
+.view-tabs button {
+  font-size: 13px;
+}
+.button-row button {
+  font-size: 14px;
+}
+.letter-editor {
+  padding: 18px 24px;
+  background-color: #f7ecd2;
+  background-image: var(--paper-art);
+}
+.letter-editor label {
+  font-size: 14px;
+}
+.attachment {
+  font-size: 13px;
+}
+.profile-layout {
+  grid-template-columns: 270px 1fr;
+}
+.profile-list {
+  max-height: calc(100dvh - 320px);
+  overflow: auto;
+}
+.profile-list > button {
+  font-size: 15px;
+}
+.profile-list small {
+  font-size: 11px;
+}
+.diary-spread {
+  grid-template-columns: 210px 1fr;
+  border: 0;
+  box-shadow: none;
+  background: none;
+  gap: 20px;
+}
+.diary-index {
+  background: none;
+  border: 0;
+  padding: 15px 10px;
+  max-height: calc(100dvh - 480px);
+  overflow: auto;
+}
+.diary-index > button {
+  font-size: 15px;
+  gap: 10px;
+  padding: 16px 10px;
+}
+.diary-index > button small {
+  font-size: 12px;
+}
+.diary-index > button em {
+  font-size: 11px;
+}
+.diary-monogram {
+  font-size: 26px;
+  padding-bottom: 20px;
+}
+.diary-page {
+  background-color: #faf0d9;
+  background-image: var(--paper-art);
+  padding: 25px 35px;
+  border: 1px solid #d1bd94;
+  border-left: 9px solid #577052;
+  border-radius: 4px;
+  box-shadow: 5px 6px 12px #59452d1a;
+}
+.diary-meta label {
+  font-size: 13px;
+}
+.diary-meta input,
+.diary-meta select {
+  font-size: 14px;
+}
+.diary-title {
+  font-size: 27px;
+}
+.diary-body {
+  font-size: 17px;
+  line-height: 36px;
+}
+.diary-filters {
+  margin-left: 230px;
+  max-width: 850px;
+}
+.diary-filters input {
+  font-size: 14px;
+}
+.diary-page > .tabs button {
+  font-size: 14px;
+}
+.diary-decor label {
+  font-size: 13px;
+}
+.ink-pad {
+  margin-top: 14px;
+}
+.ink-tools {
+  gap: 8px;
+}
+.ink-tools > button {
+  font-size: 13px;
+}
+.ink-tools label {
+  font-size: 11px;
+}
+.ink-scroll {
+  max-height: none;
+  background-color: #fbf2dd;
+  background-image: var(--paper-art);
+}
+.ink-sheet {
+  background: none;
+}
+.ink-sheet canvas {
+  position: relative;
+  z-index: 1;
+}
+.ink-guide {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 15px 30px;
+  color: #9aa5827d;
+  font-style: italic;
+  font-family: cursive;
+  font-size: clamp(25px, 4vw, 58px);
+  line-height: 1.5;
+  user-select: none;
+}
+.ink-guide > span {
+  border-bottom: 1px solid #a7b09760;
+}
+.settings-content {
+  max-width: 1000px;
+  margin: 0 auto 0 220px;
+  columns: 2;
+  column-gap: 55px;
+  padding: 15px 10px 25px;
+}
+.settings-content > * {
+  break-inside: avoid;
+}
+.settings-content h3 {
+  font-size: 24px;
+}
+.settings-content .muted {
+  font-size: 14px;
+}
+.settings-content label {
+  font-size: 14px;
+}
+.settings-content hr {
+  margin: 20px 0;
+}
+.settings-content .file-label {
+  padding: 20px;
+}
+.settings-content .primary {
+  padding: 13px 24px;
+}
+.companion {
+  max-width: 800px;
+  margin: auto;
+}
+.companion-portrait .pet-art {
+  width: 190px;
+  height: 190px;
+  bottom: 7px;
+  left: 18px;
+}
+.pet-reaction {
+  font-size: 16px;
+  min-height: 60px;
+}
+.pet-actions button {
+  font-size: 14px;
+}
+.pet-settings label {
+  font-size: 13px;
+}
+.pet-settings input,
+.pet-settings select {
+  font-size: 14px;
+}
+.companion .pet-stars,
+.companion .zzz {
+  display: none;
+}
+.case-cover {
+  background-color: #e5d6b6;
+  background-image: var(--paper-art);
+  max-width: 800px;
+  margin: 20px auto;
+  min-height: 470px;
+}
+.case-cover h3 {
+  font-size: 35px;
+}
+.case-title h3 {
+  font-size: 29px;
+}
+.case-tabs button {
+  font-size: 14px;
+}
+.case-overview {
+  max-width: 850px;
+  margin-bottom: 50px;
+}
+.case-overview .prose {
+  font-size: 17px;
+}
+.case-rules {
+  font-size: 15px;
+}
+.case-overview h3 {
+  font-size: 30px;
+}
+.evidence-desk {
+  grid-template-columns: repeat(3, 1fr);
+  margin-left: 190px;
+  gap: 24px;
+}
+.evidence-slip {
+  background-color: #eadbbc;
+  background-image: var(--paper-art);
+  padding: 24px;
+  min-height: 260px;
+}
+.evidence-slip p {
+  font-size: 15px;
+  line-height: 1.9;
+}
+.evidence-slip small {
+  font-size: 11px;
+}
+.evidence-slip h3 {
+  font-size: 23px;
+}
+.evidence-slip button {
+  font-size: 14px;
+}
+.suspect-pages {
+  margin-left: 190px;
+}
+.suspect-pages article {
+  background-color: #eee3c7;
+  background-image: var(--paper-art);
+}
+.suspect-pages p,
+.suspect-pages blockquote {
+  font-size: 16px;
+}
+.suspect-pages small {
+  font-size: 12px;
+}
+.deduction-board {
+  background-color: #7a6849;
+  border: 8px solid #8b704e;
+  margin-left: 190px;
+  min-height: 480px;
+}
+.board-pins > button {
+  background-image: var(--paper-art);
+  font-size: 17px;
+  min-height: 130px;
+  max-width: 260px;
+}
+.board-connections > div {
+  font-size: 15px;
+}
+.case-timeline {
+  max-width: 850px;
+  margin-left: 240px;
+}
+.case-timeline > div p,
+.case-timeline article p {
+  font-size: 16px;
+}
+.deduction-form {
+  max-width: 850px;
+  margin-left: 240px;
+}
+.deduction-form label {
+  font-size: 15px;
+}
+.library-reading {
+  grid-template-columns: 220px 1fr;
+  gap: 35px;
+}
+.library-bookmarks > button {
+  font-size: 15px;
+}
+.lore-book {
+  background-image: var(--paper-art);
+  padding: 35px 45px;
+}
+.lore-book p {
+  font-size: 18px;
+}
+.library-clue,
+.keepsake-letter {
+  margin-left: 230px;
+  background-image: var(--paper-art);
+}
+.collection-shelf {
+  margin-left: 210px;
+}
+.collection-shelf article p {
+  font-size: 15px;
+}
+.collection-shelf article > span {
+  font-family: Georgia;
+}
+.cursive-workspace {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 25px;
+}
+.practice-index {
+  padding: 10px;
+  max-height: calc(100dvh - 340px);
+  overflow: auto;
+}
+.practice-index > button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid #c4b694;
+  padding: 12px 14px;
+  font-size: 17px;
+}
+.practice-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.practice-index label {
+  font-size: 14px;
+}
+.practice-sheet {
+  min-width: 0;
+}
+.practice-heading {
+  text-align: center;
+  font-family: cursive;
+  font-size: 48px;
+  font-style: italic;
+  font-weight: 400;
+  margin: 15px 0;
+  color: #506b43;
+}
+.pixel-workbench {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 35px;
+}
+.pixel-sidebar {
+  padding: 12px;
+}
+.pixel-sidebar .pixel-palette {
+  display: grid;
+  grid-template-columns: repeat(4, 44px);
+  gap: 8px;
+}
+.pixel-workbench .pixel-grid {
+  min-width: 704px;
+  max-width: 900px;
+  aspect-ratio: 1;
+  margin: 0 auto 24px;
+  background-color: #f5ebd2;
+  background-image: var(--paper-art);
+}
+.pixel-canvas-wrap {
+  overflow: auto;
+  max-height: calc(100dvh - 260px);
+}
+.pixel-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 18px;
+}
+.pixel-tools button {
+  font-size: 14px;
+}
+.pixel-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+.pixel-drawing {
+  min-width: 0;
+}
+.pixel-sidebar > label {
+  font-size: 13px;
+}
+.pixel-workbench select {
+  font-size: 14px;
+}
+/* Opening and motion: real layers, with one shared reduction switch. */
+.intro {
+  background: #243a30;
+}
+.intro-door {
+  background-image: var(--wood-art);
+  background-size: auto 100%;
+  border-color: #685235;
+}
+.intro-content .crest {
+  background-color: #263b30;
+}
+.intro-content h1 {
+  font-size: 65px;
+}
+.intro-content p {
+  font-size: 15px;
+}
+.intro .skip {
+  font-size: 13px;
+}
+.gold-button {
+  font-size: 15px;
+}
+.no-motion *,
+.no-motion *:before,
+.no-motion *:after {
+  animation: none !important;
+  transition: none !important;
+}
+@keyframes room-enter {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fire-cycle {
+  0%,
+  33% {
+    opacity: 1;
+  }
+  34%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes flame-flicker {
+  25% {
+    transform: scale(0.94, 1.04);
+  }
+  75% {
+    transform: scale(1.06, 0.95);
+  }
+}
+@keyframes animal-breathe {
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes small-glint {
+  50% {
+    opacity: 0.4;
+    transform: scale(0.88);
+  }
+}
+@keyframes steam-rise {
+  from {
+    opacity: 0.05;
+    transform: translateY(6px);
+  }
+  50% {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+@keyframes window-rain {
+  from {
+    transform: translateY(-20%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (max-width: 1100px) {
+  .floating-heading small {
+    font-size: 17px;
+  }
+  .floating-heading h1 {
+    font-size: 21px;
+  }
+  .persistent-map {
+    width: 180px;
+  }
+  .modal-floating-map .persistent-map {
+    width: 165px;
+  }
+  .mail-layout {
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+  }
+  .diary-spread {
+    grid-template-columns: 180px 1fr;
+    gap: 12px;
+  }
+  .diary-filters {
+    margin-left: 190px;
+  }
+  .diary-page {
+    padding: 20px;
+  }
+  .settings-content {
+    margin-left: 185px;
+    column-gap: 28px;
+  }
+  .evidence-desk {
+    grid-template-columns: 1fr 1fr;
+    margin-left: 165px;
+  }
+  .collection-shelf {
+    margin-left: 170px;
+  }
+  .pixel-workbench,
+  .cursive-workspace {
+    grid-template-columns: 185px 1fr;
+    gap: 18px;
+  }
+  .pixel-sidebar {
+    padding: 0;
+  }
+  .scene-instruction {
+    display: none;
+  }
+}
+@media (max-width: 750px) {
+  .floating-heading {
+    left: 12px;
+    top: 12px;
+    gap: 7px;
+  }
+  .floating-heading > div {
+    padding: 9px 13px;
+  }
+  .floating-heading small {
+    font-size: 13px;
+  }
+  .floating-heading h1 {
+    font-size: 18px;
+  }
+  .floating-heading .paper-icon {
+    width: 42px;
+  }
+  .floating-controls {
+    top: 13px;
+    right: 12px;
+    gap: 6px;
+  }
+  .paper-icon {
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+  }
+  .room-back {
+    left: 12px;
+    top: 103px;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  .persistent-tools {
+    left: 12px;
+    bottom: 42px;
+  }
+  .persistent-map {
+    width: 145px;
+    padding: 9px;
+  }
+  .mini-title {
+    font-size: 14px;
+  }
+  .mini-art {
+    aspect-ratio: 1.8;
+  }
+  .bottom-actions {
+    right: 12px;
+    bottom: 43px;
+    gap: 7px;
+    flex-wrap: wrap;
+    max-width: calc(100vw - 180px);
+    justify-content: flex-end;
+  }
+  .bottom-actions > .paper-button {
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 8px 10px;
+    max-width: 155px;
+  }
+  .bottom-actions > .paper-icon {
+    width: 44px;
+  }
+  .save-indicator {
+    left: 14px;
+    bottom: 15px;
+    max-width: 90%;
+    font-size: 10px;
+  }
+  .room-menu {
+    left: 12px;
+    top: 80px;
+    width: 250px;
+  }
+  .activity-tray {
+    right: 12px;
+    bottom: 155px;
+    max-width: calc(100vw - 24px);
+  }
+  .modal-backdrop {
+    padding: 8px;
+  }
+  .modal,
+  .modal.wide {
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 14px 15px 22px;
+    border-radius: 5px;
+  }
+  .modal > header {
+    margin-bottom: 18px;
+    gap: 4px;
+  }
+  .modal h2 {
+    font-size: 24px;
+  }
+  .modal > header small {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .modal-floating-map {
+    display: none;
+  }
+  .modal-map {
+    display: grid !important;
+  }
+  .modal p,
+  .modal label,
+  .muted {
+    font-size: 14px;
+  }
+  .modal[data-surface="The Manor Map"] {
+    height: calc(100dvh - 16px);
+    max-height: none;
+  }
+  .map-house {
+    aspect-ratio: 1.6;
+    min-width: 650px;
+    max-height: none;
+  }
+  .expanded-map {
+    overflow: auto;
+  }
+  .map-destination {
+    min-width: 90px;
+    min-height: 48px;
+    padding: 6px;
+  }
+  .map-destination > span {
+    font-size: 13px;
+  }
+  .map-destination small {
+    font-size: 9px;
+  }
+  .map-legend {
+    position: sticky;
+    left: 0;
+    width: calc(100vw - 65px);
+  }
+  .mail-layout,
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  .filter-row label {
+    min-width: 130px;
+  }
+  .letter-list {
+    max-height: 160px;
+    min-height: 0;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+  }
+  .letter-list > button {
+    min-width: 220px;
+  }
+  .letter-detail {
+    padding: 0;
+  }
+  .letter-paper {
+    padding: 24px 18px;
+    min-height: 350px;
+  }
+  .letter-body {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+  .letter-paper h3 {
+    font-size: 23px;
+  }
+  .letter-editor {
+    padding: 15px;
+  }
+  .letter-actions {
+    flex-wrap: wrap;
+  }
+  .profile-list {
+    display: flex;
+    max-height: 120px;
+    overflow: auto;
+  }
+  .diary-spread {
+    grid-template-columns: 1fr;
+  }
+  .diary-index {
+    max-height: 150px;
+    display: flex;
+    overflow-x: auto;
+    padding: 8px 0;
+  }
+  .diary-index > button {
+    min-width: 165px;
+  }
+  .diary-monogram {
+    display: none;
+  }
+  .diary-filters {
+    margin-left: 0;
+  }
+  .diary-page {
+    padding: 18px 12px;
+  }
+  .diary-title {
+    font-size: 24px;
+  }
+  .diary-body {
+    font-size: 16px;
+  }
+  .settings-content {
+    margin: 0;
+    columns: 1;
+    padding: 5px;
+  }
+  .settings-content hr {
+    margin-top: 30px;
+  }
+  .evidence-desk {
+    margin-left: 0;
+    grid-template-columns: 1fr;
+  }
+  .suspect-pages {
+    margin: 0;
+    grid-template-columns: 1fr;
+  }
+  .case-timeline,
+  .deduction-form,
+  .deduction-board {
+    margin-left: 0;
+  }
+  .case-tabs {
+    flex-wrap: wrap;
+  }
+  .case-tabs button {
+    font-size: 13px;
+    padding: 9px;
+  }
+  .case-cover {
+    min-height: 400px;
+    padding: 30px 15px;
+  }
+  .case-title h3 {
+    font-size: 25px;
+  }
+  .library-reading {
+    grid-template-columns: 1fr;
+  }
+  .library-bookmarks {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .lore-book {
+    padding: 24px 20px;
+  }
+  .lore-book p {
+    font-size: 16px;
+  }
+  .library-clue,
+  .keepsake-letter,
+  .collection-shelf {
+    margin-left: 0;
+  }
+  .pixel-workbench,
+  .cursive-workspace {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .practice-index {
+    max-height: 130px;
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 0;
+  }
+  .practice-index > button {
+    min-width: 65px;
+    width: auto;
+    padding: 9px;
+  }
+  .practice-tabs {
+    flex-wrap: wrap;
+  }
+  .practice-heading {
+    font-size: 40px;
+  }
+  .pixel-sidebar {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .pixel-sidebar .pixel-palette {
+    display: flex;
+    margin: 0;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .pixel-palette > button {
+    width: 44px;
+    height: 44px;
+  }
+  .pixel-sidebar > label {
+    min-width: 120px;
+    margin: 0;
+  }
+  .pixel-tools {
+    gap: 5px;
+  }
+  .pixel-tools button {
+    font-size: 13px;
+    padding: 8px;
+  }
+  .pixel-canvas-wrap {
+    max-height: calc(100dvh - 350px);
+  }
+  .pixel-status {
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .ink-tools {
+    gap: 5px;
+  }
+  .ink-tools > button {
+    font-size: 12px;
+    padding: 7px;
+  }
+  .ink-tools label {
+    margin: 0;
+    font-size: 10px;
+  }
+  .ink-guide {
+    padding: 10px 18px;
+  }
+  .pet-settings {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .intro h1 {
+    font-size: 45px;
+  }
+  .intro h1 em {
+    font-size: 60px;
+  }
+  .intro-content p {
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+.modal-backdrop:has([data-surface="The Manor Map"]) {
+  z-index: 50;
+}
+.chest-treasures {
+  position: absolute;
+  left: 61%;
+  top: 53%;
+  width: 31%;
+  display: flex;
+  gap: 1%;
+  pointer-events: none;
+}
+.chest-treasures .sprite {
+  width: 32%;
+}
+.sprite-collectibles {
+  aspect-ratio: 1;
+}
+.old-portrait {
+  display: block;
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  width: 160px;
+  height: 210px;
+}
+.growing-fern {
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+  line-height: 1;
+}
+.growing-fern img {
+  height: 100%;
+  max-width: 90%;
+  object-fit: contain;
+}
+.collection-shelf article > span {
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.collection-shelf .sprite {
+  height: 160px;
+  width: 160px;
+}
+.pixel-grid > button {
+  touch-action: none;
+}
+.pixel-tools button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.practice-index [aria-current="page"] {
+  background: #a7b58950;
+}
+.practice-tabs button {
+  font-size: 15px;
+}
+.modal[data-surface="The Manor Map"] .map-house {
+  max-width: 1200px;
+}
+.modal[data-surface="A few little preferences"] .modal-floating-map {
+  bottom: 45px;
+}
+.map-house {
+  width: min(100%, calc((100dvh - 200px) * 1.6));
+  max-height: none !important;
+}
+.modal[data-surface="The Manor Map"] .map-house {
+  max-height: none;
+}
+.scene-instruction {
+  font-family: Georgia, "Batang", serif;
+}
+@media (max-width: 750px) {
+  .map-house {
+    width: 650px;
+  }
+  .fixed-object {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+.scene-quill {
+  top: 55%;
+  left: 81%;
+}
+.floating-heading small {
+  font-family: Georgia, "Batang", serif;
+  font-size: 25px;
+}
+.floating-heading h1 {
+  font-style: italic;
+  font-size: 22px;
+}
+.ink-mode > .module-toolbar,
+.ink-mode > .diary-filters,
+.ink-mode .diary-meta {
+  display: none;
+}
+.ink-mode .diary-page {
+  padding-top: 12px;
+}
+.ink-mode .ink-scroll {
+  max-height: calc(100dvh - 360px);
+  overflow: auto;
+}
+.ink-mode .ink-pad .muted {
+  font-size: 12px;
+}
+.ink-mode .diary-title {
+  font-size: 23px;
+}
+.ink-mode .diary-index {
+  max-height: calc(100dvh - 360px);
+}
+@media (max-width: 750px) {
+  .floating-heading small {
+    font-size: 13px;
+  }
+  .floating-heading h1 {
+    font-size: 18px;
+  }
+  .ink-mode .ink-scroll {
+    max-height: calc(100dvh - 360px);
+  }
+}
+.save-indicator {
+  z-index: 65;
+  background: #354c38bd;
+  border-radius: 3px;
+  padding: 3px 7px;
+}
+.full-manor[inert] .art-stage * {
+  animation-play-state: paused;
+}
+.room-menu {
+  max-height: calc(100dvh - 330px);
+  z-index: 12;
+}
+.profile-list {
+  max-height: clamp(140px, calc(100dvh - 530px), 550px);
+}
+.practice-index {
+  max-height: clamp(120px, calc(100dvh - 480px), 600px);
+}
+.modal[data-surface="A little companion"] .modal-floating-map,
+.modal[data-surface="Beyond the window"] .modal-floating-map {
+  display: none;
+}
+@media (max-width: 750px) {
+  .profile-list {
+    max-height: 130px;
+  }
+  .practice-index {
+    max-height: 130px;
+  }
+}
+/* Match the approved desk-and-paper workspace rather than a paper app card. */
+.modal[data-surface="Elena’s Diary"],
+.modal[data-surface="Owl Post"],
+.modal[data-surface="The writing atelier"],
+.modal[data-surface="A little pixel garden"],
+.modal[data-surface="A few little preferences"] {
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.modal[data-surface="Elena’s Diary"] > header,
+.modal[data-surface="Owl Post"] > header,
+.modal[data-surface="The writing atelier"] > header,
+.modal[data-surface="A little pixel garden"] > header,
+.modal[data-surface="A few little preferences"] > header {
+  border: 0;
+  margin-bottom: 12px;
+}
+.modal > header > div {
+  padding: 9px 18px;
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-radius: 4px;
+}
+.modal > header > .icon-button {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-radius: 50%;
+}
+.module-toolbar > .tabs,
+.module-toolbar > .cover-select {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 4px 9px;
+  border-radius: 3px;
+}
+.diary-filters {
+  margin: 0 0 14px 200px;
+  gap: 7px;
+}
+.diary-filters input {
+  min-height: 38px;
+  padding: 7px 10px;
+}
+.diary-filters > button {
+  min-height: 38px;
+  padding: 6px 10px;
+}
+.diary-spread {
+  grid-template-columns: 180px 1fr;
+  gap: 20px;
+}
+.diary-index {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-radius: 3px;
+  max-height: calc(100dvh - 510px);
+  padding: 15px 10px;
+}
+.diary-monogram {
+  font-size: 22px;
+  margin-bottom: 5px;
+  padding-bottom: 14px;
+}
+.diary-monogram span {
+  font-size: 11px;
+}
+.diary-page {
+  position: relative;
+  min-height: 660px;
+  padding: 24px 27px 25px;
+  border-left: 7px solid #547049;
+  border-radius: 8px 12px 12px 7px;
+}
+.diary-page > .diary-meta,
+.diary-page > label,
+.diary-page > .tabs,
+.diary-page > .diary-decor,
+.diary-page > .diary-sticker,
+.diary-page > .attachment,
+.diary-page > .attachment-preview,
+.diary-page > .button-row {
+  width: 48%;
+}
+.diary-meta {
+  gap: 7px;
+  flex-wrap: nowrap;
+}
+.diary-meta label {
+  min-width: 0;
+  font-size: 10px;
+  gap: 4px;
+  flex: 1;
+  margin-bottom: 10px;
+}
+.diary-meta label:first-child {
+  flex: 1.5;
+}
+.diary-meta input,
+.diary-meta select {
+  padding: 4px 7px;
+  min-height: 38px;
+  font-size: 12px;
+}
+.diary-title {
+  font-size: 25px;
+}
+.diary-page > label:has(.diary-title) {
+  font-size: 0;
+  gap: 0;
+  margin-bottom: 8px;
+}
+.diary-page > .tabs {
+  margin: 6px 0;
+}
+.diary-page > .tabs button {
+  font-size: 12px;
+  padding: 8px 9px;
+}
+.diary-body {
+  min-height: 340px;
+  font-size: 17px;
+  line-height: 35px;
+}
+.diary-decor {
+  gap: 8px;
+}
+.diary-decor label {
+  font-size: 11px;
+}
+.diary-decor select {
+  font-size: 12px;
+  min-height: 38px;
+  padding: 6px;
+}
+.diary-decor button {
+  font-size: 12px;
+}
+.journal-right {
+  position: absolute;
+  top: 24px;
+  bottom: 45px;
+  left: 51%;
+  right: 20px;
+  border-left: 1px solid #bba884;
+  padding: 12px 15px 18px 26px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.journal-right h3 {
+  font-size: 21px;
+  font-style: italic;
+  text-align: center;
+  font-weight: 400;
+  margin: 0 0 20px;
+}
+.journal-right .ink-pad {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.compact-ink .ink-tools,
+.compact-ink > .muted {
+  display: none;
+}
+.compact-ink .ink-scroll {
+  flex: 1;
+  max-height: none;
+  border: 0;
+  background: transparent;
+}
+.compact-ink .ink-sheet {
+  height: 100%;
+  min-height: 400px;
+  aspect-ratio: auto;
+  background-image: linear-gradient(transparent 96%, #b0a58c33 97%);
+  background-size: 100% 35px;
+}
+.journal-tools-link {
+  align-self: flex-end;
+  font-size: 12px;
+  border: 0;
+  font-style: italic;
+  margin-top: 12px;
+}
+.ink-mode .diary-page > .diary-meta,
+.ink-mode .diary-page > label,
+.ink-mode .diary-page > .tabs,
+.ink-mode .diary-page > .button-row {
+  width: 100%;
+}
+.ink-mode .diary-page {
+  min-height: 0;
+}
+.diary-page:has(.date-references) > .tabs,
+.diary-page:has(.date-references) > .diary-meta,
+.diary-page:has(.date-references) > label {
+  width: 100%;
+}
+.page-nav {
+  font-size: 12px;
+}
+.post-module {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  column-gap: 34px;
+}
+.post-module > .module-toolbar {
+  grid-column: 1/-1;
+  margin-bottom: 15px;
+}
+.post-module > .filter-row {
+  grid-column: 1;
+  grid-row: 2;
+  display: block;
+  margin-bottom: 15px;
+}
+.post-module > .filter-row label {
+  font-size: 12px;
+  gap: 6px;
+  margin-bottom: 10px;
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 10px;
+  border-radius: 3px;
+}
+.post-module > .filter-row input,
+.post-module > .filter-row select {
+  min-height: 38px;
+  font-size: 13px;
+  padding: 8px;
+}
+.post-module > .mail-layout {
+  display: contents;
+}
+.post-module .letter-list {
+  grid-column: 1;
+  grid-row: 3;
+  max-height: clamp(130px, calc(100dvh - 600px), 600px);
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-left: 5px solid #71815a;
+  border-radius: 3px;
+  padding: 7px 8px;
+}
+.post-module .letter-detail {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  padding: 0;
+}
+.post-module > .muted {
+  grid-column: 2;
+  font-size: 11px;
+  color: #fff5db;
+  text-shadow: 0 1px 2px #3e2c18;
+  margin-top: 16px;
+}
+.letter-actions {
+  margin-bottom: 4px;
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 4px 9px;
+  border-radius: 3px;
+  max-width: max-content;
+  margin-left: auto;
+}
+.letter-actions .badge {
+  padding-right: 15px;
+}
+.view-tabs {
+  margin-bottom: 8px;
+}
+.view-tabs button {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-radius: 3px;
+  padding: 6px 15px;
+  min-height: 38px;
+}
+.letter-paper {
+  border: 0;
+  border-radius: 5px;
+  min-height: 520px;
+  padding: 30px 40px;
+}
+.letter-paper h3 {
+  font-size: 27px;
+  margin: 15px 0;
+}
+.letter-paper .letter-body {
+  font-size: 18px;
+  line-height: 1.9;
+}
+.post-module .profile-layout {
+  grid-column: 1/-1;
+}
+.post-module > .muted:first-of-type {
+  grid-column: 1/-1;
+}
+.post-module .button-row > button {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+}
+.post-module .button-row > .primary {
+  background-color: #38533f;
+  background-image: none;
+}
+.settings-content {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-left: 7px solid #586f4a;
+  border-radius: 7px;
+  padding: 30px 35px;
+  column-rule: 1px solid #c8b58d;
+}
+.practice-sheet {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 20px 30px;
+  border-radius: 5px;
+}
+.practice-index {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  border-radius: 4px;
+}
+.practice-tabs > button {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+}
+.pixel-sidebar {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  align-self: start;
+  border-radius: 4px;
+  padding: 15px;
+}
+.pixel-tools {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 8px;
+  border-radius: 3px;
+}
+.pixel-status {
+  color: #fff3d5;
+  text-shadow: 0 1px 2px #503c23;
+}
+.pixel-status > .primary {
+  background-color: #3b563f;
+}
+.evidence-illustration {
+  width: 115px;
+  height: 100px;
+  margin: 14px auto;
+}
+.moonstone {
+  width: 140px;
+  height: 140px;
+  margin: 15px auto;
+  font-size: 0;
+  line-height: 1;
+}
+.moonstone .sprite {
+  width: 100%;
+  height: 100%;
+}
+@media (max-width: 1100px) {
+  .diary-spread {
+    grid-template-columns: 165px 1fr;
+    gap: 15px;
+  }
+  .diary-filters {
+    margin-left: 180px;
+  }
+  .diary-page {
+    padding: 20px;
+  }
+  .diary-meta {
+    flex-wrap: wrap;
+  }
+  .diary-meta label:first-child {
+    flex-basis: 100%;
+  }
+  .journal-right {
+    padding-left: 18px;
+    right: 12px;
+  }
+  .journal-right h3 {
+    font-size: 17px;
+  }
+  .diary-title {
+    font-size: 23px;
+  }
+  .post-module {
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+  }
+  .letter-paper {
+    padding: 25px;
+  }
+  .letter-paper .letter-body {
+    font-size: 16px;
+  }
+  .pixel-sidebar {
+    padding: 10px;
+  }
+  .pixel-sidebar .pixel-palette {
+    grid-template-columns: repeat(3, 44px);
+  }
+}
+@media (max-width: 750px) {
+  .diary-filters {
+    margin-left: 0;
+  }
+  .diary-spread {
+    grid-template-columns: 1fr;
+  }
+  .diary-index {
+    display: flex;
+    max-height: 125px;
+  }
+  .diary-page > .diary-meta,
+  .diary-page > label,
+  .diary-page > .tabs,
+  .diary-page > .diary-decor,
+  .diary-page > .diary-sticker,
+  .diary-page > .attachment,
+  .diary-page > .attachment-preview,
+  .diary-page > .button-row {
+    width: 100%;
+  }
+  .diary-page {
+    padding: 17px 14px;
+  }
+  .diary-meta {
+    flex-wrap: wrap;
+  }
+  .journal-right {
+    position: static;
+    border-left: 0;
+    border-top: 1px solid #bba884;
+    padding: 20px 0;
+    min-height: 380px;
+    margin-bottom: 18px;
+  }
+  .journal-right h3 {
+    font-size: 19px;
+  }
+  .compact-ink .ink-sheet {
+    min-height: 300px;
+  }
+  .post-module {
+    display: block;
+  }
+  .post-module .filter-row {
+    display: flex;
+  }
+  .post-module .letter-list {
+    display: flex;
+    max-height: 160px;
+    min-height: 0;
+    margin-bottom: 18px;
+  }
+  .post-module .letter-detail {
+    padding: 0;
+  }
+  .post-module > .muted {
+    font-size: 11px;
+  }
+  .letter-paper {
+    padding: 25px 18px;
+  }
+  .post-module .profile-layout {
+    display: grid;
+  }
+  .settings-content {
+    padding: 22px 18px;
+    margin: 0;
+  }
+  .practice-sheet {
+    padding: 15px;
+  }
+  .pixel-sidebar {
+    display: flex;
+    align-items: center;
+  }
+  .pixel-sidebar .pixel-palette {
+    display: flex;
+  }
+  .pixel-tools {
+    padding: 6px;
+  }
+  .modal > header > div {
+    padding: 9px 12px;
+  }
+  .modal h2 {
+    font-size: 23px;
+  }
+  .journal-tools-link {
+    font-size: 13px;
+  }
+}
+.modal-backdrop {
+  background-color: #dbc5a2;
+  background-blend-mode: multiply;
+}
+.modal > header {
+  padding-bottom: 4px;
+}
+.modal > header small {
+  display: none;
+}
+.modal > header h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+.diary-module > .module-toolbar {
+  margin-bottom: 12px;
+}
+.diary-module > .module-toolbar > button:not(.primary) {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+}
+.pixel-sidebar {
+  padding: 10px;
+}
+.art-plate {
+  transition: filter 1s ease;
+}
+.painted-door {
+  position: absolute;
+  top: 40%;
+  height: 26%;
+  width: 10%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  padding: 0;
+  background: transparent !important;
+  z-index: 2;
+  color: #f0e0ad;
+  display: grid;
+  place-items: center;
+}
+.painted-door svg {
+  opacity: 0;
+  filter: drop-shadow(0 1px 3px #503d29);
+  transition: opacity 0.2s;
+}
+.painted-door:hover svg,
+.painted-door:focus-visible svg {
+  opacity: 1;
+}
+.painted-door:hover .object-tip,
+.painted-door:focus-visible .object-tip {
+  opacity: 1;
+}
+@media (max-width: 750px) {
+  .diary-page {
+    display: flex;
+    flex-direction: column;
+  }
+  .journal-right {
+    order: 2;
+  }
+  .diary-page > .page-nav {
+    order: 3;
+  }
+  .diary-module > .module-toolbar {
+    gap: 7px;
+  }
+  .cover-select {
+    font-size: 10px;
+  }
+}
+.diary-page {
+  background-color: transparent;
+  background-image: var(--journal-art);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 37px 40px 35px;
+  height: calc(100dvh - 205px);
+  min-height: 0;
+  overflow: auto;
+}
+.diary-body {
+  min-height: 280px;
+  line-height: 35px;
+  font-style: italic;
+}
+.diary-title {
+  font-style: italic;
+}
+.journal-right {
+  border-left: 0;
+  top: 37px;
+  bottom: 45px;
+  right: 35px;
+  padding-left: 24px;
+}
+.journal-right .ink-scroll {
+  background: none;
+}
+.compact-ink .ink-sheet {
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 8/5;
+}
+.journal-right {
+  background-image: linear-gradient(transparent 96%, #b0a58c33 97%);
+  background-size: 100% 35px;
+}
+.journal-right h3,
+.journal-tools-link {
+  background: var(--paper);
+}
+.ink-mode .diary-page {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 20px;
+  height: auto;
+  border-left: 5px solid #5a6f4c;
+  border-radius: 6px;
+}
+.post-module {
+  display: block;
+}
+.post-module > .filter-row {
+  display: flex;
+  max-width: 700px;
+  margin: 0 0 15px;
+}
+.post-module > .mail-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 35px;
+  min-height: calc(100dvh - 290px);
+}
+.post-module .letter-list {
+  grid-area: auto;
+  max-height: calc(100dvh - 370px);
+  min-height: 160px;
+  align-self: start;
+}
+.post-module .letter-detail {
+  grid-area: auto;
+  padding: 0;
+}
+.letter-paper .letter-body {
+  font-size: 22px;
+  line-height: 1.85;
+  font-style: italic;
+  max-width: 65ch;
+}
+.letter-paper .signature {
+  font-size: 27px;
+}
+.letter-paper {
+  padding: 35px 45px;
+  min-height: calc(100dvh - 420px);
+}
+.post-module .letter-detail > .button-row {
+  margin-top: 14px;
+}
+.post-module > .muted {
+  max-width: 1000px;
+  margin-left: 355px;
+}
+.post-module .profile-list {
+  max-height: clamp(140px, calc(100dvh - 530px), 550px);
+}
+@media (max-width: 1100px) {
+  .post-module > .mail-layout {
+    grid-template-columns: 235px 1fr;
+    gap: 22px;
+  }
+  .letter-paper {
+    padding: 25px;
+  }
+  .letter-paper .letter-body {
+    font-size: 18px;
+  }
+  .post-module > .muted {
+    margin-left: 257px;
+  }
+  .diary-page {
+    padding: 30px;
+  }
+  .journal-right {
+    right: 25px;
+  }
+}
+@media (max-width: 750px), (max-width: 1000px) and (orientation: portrait) {
+  .diary-spread {
+    grid-template-columns: 1fr;
+  }
+  .diary-index {
+    display: flex;
+    max-height: 125px;
+  }
+  .diary-monogram {
+    display: none;
+  }
+  .diary-filters {
+    margin-left: 0;
+  }
+  .diary-page {
+    background-color: var(--paper);
+    background-image: var(--paper-art);
+    border-left: 5px solid #5b714e;
+    border-radius: 6px;
+    padding: 18px 15px;
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+  .diary-page > .diary-meta,
+  .diary-page > label,
+  .diary-page > .tabs,
+  .diary-page > .diary-decor,
+  .diary-page > .diary-sticker,
+  .diary-page > .attachment,
+  .diary-page > .attachment-preview,
+  .diary-page > .button-row {
+    width: 100%;
+  }
+  .journal-right {
+    position: static;
+    border-top: 1px solid #bba884;
+    padding: 20px 0;
+    min-height: 350px;
+    order: 2;
+  }
+  .diary-page > .page-nav {
+    order: 3;
+  }
+  .journal-right h3 {
+    font-size: 20px;
+  }
+  .diary-meta label:first-child {
+    flex-basis: auto;
+  }
+  .post-module > .mail-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .post-module .letter-list {
+    min-height: 0;
+    max-height: 150px;
+    display: flex;
+    overflow: auto;
+  }
+  .post-module > .muted {
+    margin-left: 0;
+  }
+  .letter-paper .letter-body {
+    font-size: 17px;
+  }
+  .letter-paper {
+    padding: 25px 18px;
+    min-height: 400px;
+  }
+}
+.diary-page {
+  padding: 55px 6.5% 50px;
+}
+.journal-left {
+  width: 48%;
+  height: calc(100% - 30px);
+  overflow: auto;
+  scrollbar-width: thin;
+  padding: 3px;
+}
+.journal-left > .diary-meta,
+.journal-left > label,
+.journal-left > .tabs,
+.journal-left > .diary-decor,
+.journal-left > .diary-sticker,
+.journal-left > .attachment,
+.journal-left > .attachment-preview,
+.journal-left > .button-row {
+  width: 100%;
+}
+.journal-left > label:has(.diary-title) {
+  font-size: 0;
+  gap: 0;
+  margin-bottom: 8px;
+}
+.journal-left > .tabs {
+  margin: 6px 0;
+}
+.journal-left > .tabs button {
+  font-size: 12px;
+  padding: 8px 9px;
+}
+.journal-right {
+  top: 55px;
+  right: 6.5%;
+  bottom: 65px;
+}
+.diary-page > .page-nav {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 35px;
+  margin: 0;
+  padding: 4px 0;
+  border: 0;
+}
+.ink-mode .journal-left,
+.diary-page:has(.date-references) .journal-left {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.ink-mode .diary-page > .page-nav {
+  position: static;
+  margin-top: 15px;
+}
+.diary-page:has(.date-references) {
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  height: auto;
+  padding: 30px;
+  border-radius: 6px;
+}
+.diary-page:has(.date-references) > .page-nav {
+  position: static;
+}
+.diary-page.paper-sage {
+  background-color: #dce8ca;
+  background-blend-mode: multiply;
+}
+.diary-page.paper-rose {
+  background-color: #f1d7d0;
+  background-blend-mode: multiply;
+}
+.cover-burgundy .diary-index {
+  border-left: 6px solid #60383e;
+}
+.cover-navy .diary-index {
+  border-left: 6px solid #232c3d;
+}
+.letter-paper.grey {
+  background-color: #d6d8d2;
+  background-blend-mode: multiply;
+}
+.letter-paper.rose {
+  background-color: #eed4cb;
+  background-blend-mode: multiply;
+}
+@media (max-width: 750px), (max-width: 1000px) and (orientation: portrait) {
+  .diary-page {
+    padding: 20px 15px;
+  }
+  .journal-left {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+  .journal-right {
+    position: static;
+    padding: 20px 0;
+  }
+  .diary-page > .page-nav {
+    position: static;
+    margin-top: 15px;
+  }
+  .journal-left > .diary-meta {
+    flex-wrap: wrap;
+  }
+}
+/* The expanded map is the parchment itself, without a second app-card frame. */
+.modal[data-surface="The Manor Map"] {
+  position: relative;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  max-width: none;
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh !important;
+  overflow: hidden;
+}
+.modal[data-surface="The Manor Map"] > header {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 4%;
+  z-index: 3;
+  border: 0;
+  pointer-events: none;
+  align-items: center;
+}
+.modal[data-surface="The Manor Map"] > header > div {
+  margin: auto;
+  background: none;
+  padding: 0;
+}
+.modal[data-surface="The Manor Map"] > header h2 {
+  font-size: 36px;
+  font-style: italic;
+}
+.modal[data-surface="The Manor Map"] > header > .icon-button {
+  pointer-events: auto;
+}
+.modal[data-surface="The Manor Map"] .expanded-map {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+.modal[data-surface="The Manor Map"] .map-house {
+  width: min(100vw, calc(100dvh * 1.6));
+  max-width: none;
+  margin: 0;
+  flex-shrink: 0;
+}
+.modal[data-surface="The Manor Map"] .map-legend {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 6%;
+  margin: 0;
+  background-color: var(--paper);
+  background-image: var(--paper-art);
+  padding: 6px 12px;
+  border-radius: 3px;
+  z-index: 2;
+  max-width: 450px;
+}
+.modal[data-surface="The Manor Map"] .map-destination {
+  min-width: 110px;
+  min-height: 50px;
+}
+@media (max-width: 750px) {
+  .modal[data-surface="The Manor Map"] > header {
+    left: 16px;
+    right: 16px;
+    top: 20px;
+  }
+  .modal[data-surface="The Manor Map"] > header h2 {
+    font-size: 28px;
+  }
+  .modal[data-surface="The Manor Map"] .expanded-map {
+    display: block;
+    padding-top: 80px;
+  }
+  .modal[data-surface="The Manor Map"] .map-house {
+    width: 650px;
+    min-width: 650px;
+  }
+  .modal[data-surface="The Manor Map"] .map-destination {
+    min-width: 90px;
+    min-height: 48px;
+  }
+  .modal[data-surface="The Manor Map"] .map-legend {
+    position: fixed;
+    left: 15px;
+    bottom: 20px;
+    right: 15px;
+    max-width: calc(100vw - 30px);
+    width: auto;
+  }
+}
+@media (orientation: portrait) {
+  .scene-instruction {
+    display: block;
+    left: 50%;
+    bottom: 200px;
+    font-size: 0;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .scene-instruction span {
+    display: block;
+    font-size: 12px;
+  }
+}
+.map-destination.here {
+  background-blend-mode: multiply;
+}

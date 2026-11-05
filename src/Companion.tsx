@@ -24,7 +24,12 @@ export function Companion({ state, update, notify }: ModuleProps) {
         ? "작은 간식을 오물오물 먹고 당신을 올려다봅니다."
         : "오늘은 충분히 먹었어요. 곁에 앉아 주는 것만으로도 좋아해요.";
     }
-    if (action === "pet") text = "손에 머리를 기대며 나지막이 소리를 냅니다.";
+    if (action === "pet")
+      text = [
+        "손에 머리를 기대며 나지막이 소리를 냅니다.",
+        "살짝 눈을 감고 손바닥에 이마를 비벼요.",
+        "천천히 눈을 깜빡이며 작은 인사를 건네요.",
+      ][Math.floor(Math.random() * 3)];
     if (action === "play")
       text = "깃털 장난감을 따라 폴짝! 한 바퀴를 돌아옵니다.";
     if (action === "sleep") text = "당신 곁에서 몸을 둥글게 말고 잠이 듭니다.";
@@ -52,7 +57,18 @@ export function Companion({ state, update, notify }: ModuleProps) {
         className={`companion-portrait action-${anim || state.pet.action} ${night ? "sleepy" : ""}`}
       >
         <span className="pet-stars">✧　 ·　 ✦</span>
-        <PetArt owl={state.pet.look === "owl"} />
+        <PetArt
+          owl={state.pet.look === "owl"}
+          pose={
+            state.pet.action === "sleeping"
+              ? 2
+              : state.pet.action === "walking"
+                ? 3
+                : state.pet.action === "happy"
+                  ? 1
+                  : 0
+          }
+        />
         {state.pet.action === "sleeping" && <span className="zzz">z z Z</span>}
       </div>
       <h3>{state.pet.name}</h3>

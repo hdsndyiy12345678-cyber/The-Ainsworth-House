@@ -4,6 +4,7 @@ test("case can be investigated, resumed and solved with fixed facts", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "인트로 건너뛰기" }).click();
+  await page.getByRole("button", { name: "방 목록 열기" }).click();
   await page.getByRole("button", { name: "Mystery Room", exact: true }).click();
   await page.getByRole("button", { name: "사건 수사 시작" }).first().click();
   const d = page.getByRole("dialog");
